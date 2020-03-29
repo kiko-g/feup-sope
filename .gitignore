@@ -1,1 +1,6 @@
 .vscode/
+*.a
+*.d
+*.o
+*.out
+simpledu
