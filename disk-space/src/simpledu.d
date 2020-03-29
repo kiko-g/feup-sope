@@ -1,0 +1,1 @@
+simpledu.o: simpledu.c
