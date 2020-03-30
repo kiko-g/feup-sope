@@ -1,1 +1,0 @@
-make clean && make && ./simpledu --firstflag -L --parameter && make clean
