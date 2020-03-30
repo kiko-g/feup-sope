@@ -8,9 +8,8 @@ int main(int argc, char *argv[])
     struct dirent* ent;
 
     for(int i=1; i < argc; ++i) strcpy(flags[i-1], argv[i]);
-    for(int i=0; i != argc-1; ++i) printf("%s ", flags[i]);
-
-    printf("\n\n");
+    for(int i=0; i < argc-1; ++i) printf("%s\n", flags[i]);
+    
     while((ent = readdir(dir)) != NULL) {
         if(strcmp(ent->d_name, ".") == 0 || strcmp(ent->d_name, "..") == 0)
             continue; // ignore current folder and parent folder
