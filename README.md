@@ -8,10 +8,14 @@
 
 **Course:** Sistemas Operativos ([SOPE @ SiFEUP](https://sigarra.up.pt/feup/pt/ucurr_geral.ficha_uc_view?pv_ocorrencia_id=436440)) | _Operating Systems_
 
-**Project 1:** [TBD]()\
-**Project 2:** [TBD]()
+
+|  Project Number | Project Name | Lab Description |
+| :-------------: | :---------: | :-------------: |
+|      **#1**     |[Simple DU](https://github.com/kiko-g/feup-sope/projects/disk-space)|A simplified version of linux/unix command "du" (disk usage)|
+|      **#2**     |[TBD](https://github.com/kiko-g/feup-sope/projects/disk-space)    |      TBD              |
+
 
 ---
 
 ### **Disclaimer**:
-This repository was created for educational purposes and we do not take responsibility for anything related to its content. Feel free to
+This repository was created for educational purposes and we do not take responsibility for anything related to its content.
