@@ -10,8 +10,6 @@
 | [Miguel Pinto](https://github.com/MiguelDelPinto)| 
 | [Tiago Alves](https://github.com/tiago-falves)| 
 
----
-
 |  Project Number | Project Name | Lab Description |
 | :-------------: | :---------: | :-------------: |
 |      **#1**     |[Simple DU](https://github.com/kiko-g/feup-sope/projects/disk-space)|A simplified version of linux/unix command "du" (disk usage)|
