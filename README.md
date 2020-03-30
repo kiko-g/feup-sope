@@ -12,7 +12,7 @@
 
 
 
-| Name  | Description |
+| Project Name  | Description |
 |:-------------:| :---------: |
 |[Simple DU](https://github.com/kiko-g/feup-sope/projects/disk-space)|A simplified version of Linux/UNIX command [du](http://linuxcommand.org/lc3_man_pages/du1.html)|
 |[TBD](https://github.com/kiko-g/feup-sope/projects/disk-space)      |      TBD              |
