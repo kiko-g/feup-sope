@@ -4,16 +4,18 @@
 
 ---
 
-|      Project owners    |
+|      Devs    |
 | :-------------------:  |
 | [Francisco Gonçalves](https://github.com/kiko-g)|
 | [Miguel Pinto](https://github.com/MiguelDelPinto)| 
 | [Tiago Alves](https://github.com/tiago-falves)| 
 
-|  Project Number | Project Name | Lab Description |
-| :-------------: | :---------: | :-------------: |
-|      **#1**     |[Simple DU](https://github.com/kiko-g/feup-sope/projects/disk-space)|A simplified version of linux/unix command "du" (disk usage)|
-|      **#2**     |[TBD](https://github.com/kiko-g/feup-sope/projects/disk-space)    |      TBD              |
+
+
+| Name  | Description |
+|:-------------:| :---------: |
+|[Simple DU](https://github.com/kiko-g/feup-sope/projects/disk-space)|A simplified version of Linux/UNIX command [du](http://linuxcommand.org/lc3_man_pages/du1.html)|
+|[TBD](https://github.com/kiko-g/feup-sope/projects/disk-space)      |      TBD              |
 
 
 ---
