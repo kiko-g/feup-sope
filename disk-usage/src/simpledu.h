@@ -1,13 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <dirent.h>
 #define MAX_FLAG_LEN 20
-
 #define ALL_FLAG_SHORT          "-a"
 #define ALL_FLAG_LONG           "--all"
 #define BYTES_FLAG_SHORT        "-b"
@@ -21,5 +21,43 @@
 #define SEPARATEDIRS_FLAG_SHORT "-S"
 #define SEPARATEDIRS_LONG       "--separate-dirs"
 #define MAX_DEPTH_FLAG          "--max-depth="
+#define RED_TEXT                "\033[0;31m"
+#define BLUE_TEXT               "\033[0;34m"
+#define GREEN_TEXT              "\033[0;32m"
+#define RESET_TEXT_COLOR        "\033[0m"
 
 
+
+/**
+ * @brief checks if a path was provided through command line 
+ * and sets the working directory to the correct path
+ * @param flags parsed flags array
+ * @param len length of the flags array
+ * @return true if valid path was provided, false otherwise
+ */
+bool pathProvided(char flags[][MAX_FLAG_LEN], size_t len) 
+{
+    short index = -1;
+    for(size_t i=0; i < len; ++i)
+        for (size_t j = 0; j < strlen(flags[i]); ++j)
+            if(flags[i][j] == '/') index = i;
+
+    if(index == -1) { 
+        // path not provided
+        printf("%sAnalysing current working directory.%s\n", GREEN_TEXT, RESET_TEXT_COLOR);
+        return false;
+    }
+
+    if(opendir(flags[index]) == NULL) { 
+        // path provided but invalid
+        printf("%sNo valid path to directory provided.%s\n", RED_TEXT, RESET_TEXT_COLOR);
+        printf("%sAnalysing current working directory.%s\n", GREEN_TEXT, RESET_TEXT_COLOR);
+        return false;
+    } 
+
+    else { 
+        // path provided and valid
+        printf("%sAnalysing '%s'%s\n", GREEN_TEXT, flags[index], RESET_TEXT_COLOR);
+        return true;
+    } 
+}

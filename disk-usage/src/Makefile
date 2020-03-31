@@ -1,3 +1,4 @@
+# @ stops the Makefile from echoing to console
 CC=gcc
 CFLAGS=-Wall -Wextra -pedantic -Wno-unused-parameter #-Werror
 TARGETS = $(patsubst %.c,%,$(wildcard *.c))
@@ -20,6 +21,6 @@ $(foreach TARGET,$(TARGETS),$(eval $(call make_target,$(TARGET))))
 	$(CC) $(CFLAGS) $(DEV_FLAGS) -MMD -c $< -o $@
 	
 clean:
-	rm -f $(TARGETS) *.o *.d *.i *.s
+	@rm -f $(TARGETS) *.o *.d *.i *.s
 
 -include $(TARGETS:=.d)
