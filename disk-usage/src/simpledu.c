@@ -27,7 +27,10 @@ int main(int argc, char *argv[])
 
         // apply different behaviors for files and directories
         if(S_ISREG(buf.st_mode)) printf("File: %-30s %ld Bytes\n", ent->d_name, buf.st_size);
-        else printf("Directory: %-30s (can go deeper)\n", ent->d_name);
+        else {
+            printf("Dir:  %-30s (can go deeper)\n", ent->d_name);
+            // details(ent->d_name);
+        } 
     }
 
     return 0;

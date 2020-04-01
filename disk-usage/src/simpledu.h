@@ -7,7 +7,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <dirent.h>
-#define MAX_FLAG_LEN 20
+#define MAX_FLAG_LEN 50
 #define ALL_FLAG_SHORT          "-a"
 #define ALL_FLAG_LONG           "--all"
 #define BYTES_FLAG_SHORT        "-b"
@@ -61,4 +61,29 @@ int pathProvided(char flags[][MAX_FLAG_LEN], size_t len)
         printf("%sAnalysing '%s'%s\n", GREEN_TEXT, flags[index], RESET_TEXT_COLOR);
         return index;
     } 
+}
+
+
+void details(char dirname[]) {
+    DIR *dir = opendir(dirname);
+    struct dirent *ent;
+    struct stat buf;
+
+    while ((ent = readdir(dir)) != NULL)
+    {
+        // skip showing current folder and parent folder
+        if (strcmp(dirname, ".") == 0 || strcmp(dirname, "..") == 0)
+            continue;
+
+        stat(dirname, &buf);
+
+        // apply different behaviors for files and directories
+        if (S_ISREG(buf.st_mode))
+            printf("File: %-30s %ld Bytes\n", dirname, buf.st_size);
+        else
+        {
+            printf("Directory: %-30s (can go deeper)\n", dirname);
+            details(dirname);
+        }
+    }
 }
