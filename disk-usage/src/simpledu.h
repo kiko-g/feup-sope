@@ -33,31 +33,32 @@
  * and sets the working directory to the correct path
  * @param flags parsed flags array
  * @param len length of the flags array
- * @return true if valid path was provided, false otherwise
+ * @return positive index if successfully read a path
  */
-bool pathProvided(char flags[][MAX_FLAG_LEN], size_t len) 
+int pathProvided(char flags[][MAX_FLAG_LEN], size_t len) 
 {
+    printf("\n");
     short index = -1;
     for(size_t i=0; i < len; ++i)
         for (size_t j = 0; j < strlen(flags[i]); ++j)
-            if(flags[i][j] == '/') index = i;
+            if(flags[i][j] == '/' || flags[i][j] == '~') index = i;
 
     if(index == -1) { 
         // path not provided
         printf("%sAnalysing current working directory.%s\n", GREEN_TEXT, RESET_TEXT_COLOR);
-        return false;
+        return -1;
     }
 
     if(opendir(flags[index]) == NULL) { 
         // path provided but invalid
-        printf("%sNo valid path to directory provided.%s\n", RED_TEXT, RESET_TEXT_COLOR);
+        printf("%sNo valid path to directory provided %s('%s').\n", RED_TEXT, RESET_TEXT_COLOR, flags[index]);
         printf("%sAnalysing current working directory.%s\n", GREEN_TEXT, RESET_TEXT_COLOR);
-        return false;
-    } 
+        return -1;
+    }
 
     else { 
         // path provided and valid
         printf("%sAnalysing '%s'%s\n", GREEN_TEXT, flags[index], RESET_TEXT_COLOR);
-        return true;
+        return index;
     } 
 }

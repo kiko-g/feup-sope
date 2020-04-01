@@ -1,5 +1,1 @@
-make clean &&
-make &&
-clear &&
-./simpledu --all -b &&
-make clean
+make clean && make && clear && ./simpledu --all --whatever && make clean
