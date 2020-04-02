@@ -7,6 +7,8 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <dirent.h>
+#include "arguments.h"
+
 #define MAX_FLAG_LEN 50
 #define ALL_FLAG_SHORT          "-a"
 #define ALL_FLAG_LONG           "--all"
@@ -46,4 +48,10 @@ bool isDirectory(const char *path);
 
 bool isSymbolLink(const char *path);
 
-bool validFlag(char * flag);
+int validFlag(char * flag);
+
+bool activateFlag(char * flag, struct Arguments * args);
+
+bool parseArguments(char * argv[],int argc, struct Arguments * args);
+
+int isPath(const char *path);

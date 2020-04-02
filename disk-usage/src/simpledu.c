@@ -1,26 +1,40 @@
 #include "simpledu.h"
-#include "arguments.h"
 
 int main(int argc, char *argv[])
 {
     char *dirname = ".";
-    char flags[argc][MAX_FLAG_LEN];
+    // char flags[argc][MAX_FLAG_LEN];
     DIR *dir = opendir(dirname);
     struct dirent *ent;
     struct stat buf;
+    struct Arguments args;
 
     // parse flags
-    for (int i = 1; i < argc; ++i){
-        strcpy(flags[i - 1], argv[i]);
+    // for (int i = 1; i < argc; ++i)
+    // {
+    //     strcpy(flags[i - 1], argv[i]);
+    // }
+
+    // printf("FLAGS\n");
+    // for (int i = 0; i < argc - 1; ++i)
+    //     printf("%s%s%s\n", BLUE_TEXT, flags[i], RESET_TEXT_COLOR);
+
+    
+    //Isto funciona com outras pastas ou so com o diretorio atual?
+    // int index = pathProvided(flags, (size_t)argc - 1);
+    // if (index != -1){
+    //     //Nunca esta a entrar aqui!
+    //     dir = opendir(flags[index]);
+    //     printf("%s zas2",flags[index]);
+    // }
+
+    if(!parseArguments(argv,argc,&args)){
+        printf("Error Parsing arguments");
+        return 1;
     }
-
-    printf("FLAGS\n");
-    for (int i = 0; i < argc - 1; ++i)
-        printf("%s%s%s\n", BLUE_TEXT, flags[i], RESET_TEXT_COLOR);
-
-    int index = pathProvided(flags, (size_t)argc - 1);
-    if (index != -1)
-        dir = opendir(flags[index]);
+    // dir = opendir(args.path);
+    // printf("%s zas",args.path);
+    
 
     while ((ent = readdir(dir)) != NULL)
     {
@@ -33,7 +47,7 @@ int main(int argc, char *argv[])
         // apply different behaviors for files and directories
         if (isFile(ent->d_name))
             printf("File: %-30s %ld Bytes\n", ent->d_name, buf.st_size);
-        else if(isDirectory(ent->d_name))
+        else if (isDirectory(ent->d_name))
         {
             printf("Dir:  %-30s (can go deeper)\n", ent->d_name);
             // details(ent->d_name);
@@ -41,6 +55,18 @@ int main(int argc, char *argv[])
     }
 
     return 0;
+}
+
+bool parseArguments(char * argv[],int argc, struct Arguments * args){
+    
+    //TODO: Falta adicionar o path!
+    for (int i = 1; i < argc; i++)
+        if(!activateFlag(argv[i],args)){
+            if(isPath(argv[i]) != -1){
+                strcpy(args->path,argv[i]);
+            } else return false;
+        }
+    return true;
 }
 
 int pathProvided(char flags[][MAX_FLAG_LEN], size_t len)
@@ -127,13 +153,67 @@ bool isSymbolicLink(const char *path)
     return false;
 }
 
-bool validFlag(char * flag){
+
+
+
+int validFlag(char *flag)
+{
     for (int i = 0; i < 13; i++)
     {
-        if(!strcmp(flag,ARGUMENTS[i]))
-            return true;
+        if (!strcmp(flag, ARGUMENTS[i])){
+            return i; //Returns position in the ARGUMENTS array
+        }
     }
-    printf("Invalid Flag %s",flag);
+    return -1;
+}
+
+bool activateFlag(char * flag, struct Arguments * args){
+    int index = validFlag(flag);
+    if(index == -1) return false;
+    else if(!strcmp(ARGUMENTS[index],ALL_FLAG_SHORT) || !strcmp(ARGUMENTS[index],ALL_FLAG_LONG)){
+        args->all = true;
+        return true;
+    }
+    else if(!strcmp(ARGUMENTS[index],BYTES_FLAG_SHORT) || !strcmp(ARGUMENTS[index],BYTES_FLAG_LONG)){
+        args->bytes = true;
+        return true;
+    }
+    else if(!strcmp(ARGUMENTS[index],BLOCKSIZE_FLAG_SHORT) || !strcmp(ARGUMENTS[index],BLOCKSIZE_FLAG_LONG)){
+        args->block_size = true;
+        return true;
+    }
+    else if(!strcmp(ARGUMENTS[index],COUNTLINKS_FLAG_SHORT) || !strcmp(ARGUMENTS[index],COUNTLINKS_FLAG_LONG)){
+        args->countLinks = true;
+        return true;
+    }
+    else if(!strcmp(ARGUMENTS[index],LINK_FLAG_SHORT) || !strcmp(ARGUMENTS[index],LINK_FLAG_LONG)){
+        args->deference = true;
+        return true;
+    }
+    else if(!strcmp(ARGUMENTS[index],SEPARATEDIRS_FLAG_SHORT) || !strcmp(ARGUMENTS[index],SEPARATEDIRS_LONG)){
+        args->separateDirs = true;
+        return true;
+    }
+    else if(!strcmp(ARGUMENTS[index],MAX_DEPTH_FLAG)){
+        args->max_depth = 1; //TODO
+        return true;
+    }
     return false;
-    
+}
+
+// if path is not valid return -1
+// if file return 0
+// if directory return 1
+int isPath(const char *path) {
+    struct stat path_stat;
+    if (lstat(path, &path_stat) < 0) // Invalid path
+        return -1;
+    else if (isDirectory(path)) // Directory
+        return 1;
+    else if (isFile(path)) // File
+        return 0;
+    else if(isSymbolicLink(path))
+        return 2;
+    else
+        return -1;
 }
