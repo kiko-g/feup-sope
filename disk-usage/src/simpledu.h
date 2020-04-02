@@ -21,6 +21,7 @@
 #define SEPARATEDIRS_FLAG_SHORT "-S"
 #define SEPARATEDIRS_LONG       "--separate-dirs"
 #define MAX_DEPTH_FLAG          "--max-depth="
+#define ARGUMENTS (char*[13]){ALL_FLAG_SHORT, ALL_FLAG_LONG  , BYTES_FLAG_SHORT  , BYTES_FLAG_LONG   , BLOCKSIZE_FLAG_SHORT , BLOCKSIZE_FLAG_LONG , COUNTLINKS_FLAG_SHORT , COUNTLINKS_FLAG_LONG, LINK_FLAG_SHORT , LINK_FLAG_LONG , SEPARATEDIRS_FLAG_SHORT, SEPARATEDIRS_LONG , MAX_DEPTH_FLAG}
 #define RED_TEXT                "\033[0;31m"
 #define BLUE_TEXT               "\033[0;34m"
 #define GREEN_TEXT              "\033[0;32m"
@@ -44,3 +45,5 @@ bool isFile(const char *path);
 bool isDirectory(const char *path);
 
 bool isSymbolLink(const char *path);
+
+bool validFlag(char * flag);

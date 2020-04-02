@@ -1,4 +1,5 @@
 #include "simpledu.h"
+#include "arguments.h"
 
 int main(int argc, char *argv[])
 {
@@ -9,8 +10,9 @@ int main(int argc, char *argv[])
     struct stat buf;
 
     // parse flags
-    for (int i = 1; i < argc; ++i)
+    for (int i = 1; i < argc; ++i){
         strcpy(flags[i - 1], argv[i]);
+    }
 
     printf("FLAGS\n");
     for (int i = 0; i < argc - 1; ++i)
@@ -29,9 +31,9 @@ int main(int argc, char *argv[])
         stat(ent->d_name, &buf);
 
         // apply different behaviors for files and directories
-        if (S_ISREG(buf.st_mode))
+        if (isFile(ent->d_name))
             printf("File: %-30s %ld Bytes\n", ent->d_name, buf.st_size);
-        else
+        else if(isDirectory(ent->d_name))
         {
             printf("Dir:  %-30s (can go deeper)\n", ent->d_name);
             // details(ent->d_name);
@@ -120,7 +122,18 @@ bool isSymbolicLink(const char *path)
 {
     struct stat buf;
     stat(path, &buf);
-    if (S_ISLNK(buf.st_mode)) // Directory
+    if (S_ISLNK(buf.st_mode)) // Symbolic Link
         return true;
     return false;
+}
+
+bool validFlag(char * flag){
+    for (int i = 0; i < 13; i++)
+    {
+        if(!strcmp(flag,ARGUMENTS[i]))
+            return true;
+    }
+    printf("Invalid Flag %s",flag);
+    return false;
+    
 }

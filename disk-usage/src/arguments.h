@@ -1,4 +1,4 @@
-struct Args {
+struct Arguments {
     bool all;
     bool bytes;
     bool block_size;
