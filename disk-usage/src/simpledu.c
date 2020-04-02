@@ -1,21 +1,24 @@
 #include "simpledu.h"
 
-int main(int argc, char *argv[]) 
+int main(int argc, char *argv[])
 {
-    char* dirname = ".";
+    char *dirname = ".";
     char flags[argc][MAX_FLAG_LEN];
-    DIR* dir = opendir(dirname);
-    struct dirent* ent;
+    DIR *dir = opendir(dirname);
+    struct dirent *ent;
     struct stat buf;
 
     // parse flags
-    for(int i=1; i < argc; ++i) strcpy(flags[i-1], argv[i]);
+    for (int i = 1; i < argc; ++i)
+        strcpy(flags[i - 1], argv[i]);
 
     printf("FLAGS\n");
-    for(int i=0; i < argc-1; ++i) printf("%s%s%s\n", BLUE_TEXT, flags[i], RESET_TEXT_COLOR);
+    for (int i = 0; i < argc - 1; ++i)
+        printf("%s%s%s\n", BLUE_TEXT, flags[i], RESET_TEXT_COLOR);
 
-    int index = pathProvided(flags, (size_t)argc-1);
-    if(index != -1) dir = opendir(flags[index]);
+    int index = pathProvided(flags, (size_t)argc - 1);
+    if (index != -1)
+        dir = opendir(flags[index]);
 
     while ((ent = readdir(dir)) != NULL)
     {
@@ -26,46 +29,52 @@ int main(int argc, char *argv[])
         stat(ent->d_name, &buf);
 
         // apply different behaviors for files and directories
-        if(S_ISREG(buf.st_mode)) printf("File: %-30s %ld Bytes\n", ent->d_name, buf.st_size);
-        else {
+        if (S_ISREG(buf.st_mode))
+            printf("File: %-30s %ld Bytes\n", ent->d_name, buf.st_size);
+        else
+        {
             printf("Dir:  %-30s (can go deeper)\n", ent->d_name);
             // details(ent->d_name);
-        } 
+        }
     }
 
     return 0;
 }
 
-
-int pathProvided(char flags[][MAX_FLAG_LEN], size_t len) 
+int pathProvided(char flags[][MAX_FLAG_LEN], size_t len)
 {
     printf("\n");
     short index = -1;
-    for(size_t i=0; i < len; ++i)
+    for (size_t i = 0; i < len; ++i)
         for (size_t j = 0; j < strlen(flags[i]); ++j)
-            if(flags[i][j] == '/' || flags[i][j] == '~') index = i;
+            if (flags[i][j] == '/' || flags[i][j] == '~')
+                index = i;
 
-    if(index == -1) { 
+    if (index == -1)
+    {
         // path not provided
         printf("%sAnalysing current working directory.%s\n", GREEN_TEXT, RESET_TEXT_COLOR);
         return -1;
     }
 
-    if(opendir(flags[index]) == NULL) { 
+    if (opendir(flags[index]) == NULL)
+    {
         // path provided but invalid
         printf("%sNo valid path to directory provided %s('%s').\n", RED_TEXT, RESET_TEXT_COLOR, flags[index]);
         printf("%sAnalysing current working directory.%s\n", GREEN_TEXT, RESET_TEXT_COLOR);
         return -1;
     }
 
-    else { 
+    else
+    {
         // path provided and valid
         printf("%sAnalysing '%s'%s\n", GREEN_TEXT, flags[index], RESET_TEXT_COLOR);
         return index;
-    } 
+    }
 }
 
-void details(char dirname[]) {
+void details(char dirname[])
+{
     DIR *dir = opendir(dirname);
     struct dirent *ent;
     struct stat buf;
@@ -79,9 +88,9 @@ void details(char dirname[]) {
         stat(dirname, &buf);
 
         // apply different behaviors for files and directories
-        if (S_ISREG(buf.st_mode))
+        if (isFile(dirname))
             printf("File: %-30s %ld Bytes\n", dirname, buf.st_size);
-        else
+        else if (isDirectory(dirname))
         {
             printf("Directory: %-30s (can go deeper)\n", dirname);
             details(dirname);
@@ -89,24 +98,29 @@ void details(char dirname[]) {
     }
 }
 
-bool isFile(const char *path){
+bool isFile(const char *path)
+{
     struct stat buf;
+    stat(path, &buf);
     if (S_ISREG(buf.st_mode)) // File
         return true;
     return false;
 }
 
-bool isDirectory(const char *path){
+bool isDirectory(const char *path)
+{
     struct stat buf;
+    stat(path, &buf);
     if (S_ISDIR(buf.st_mode)) // Directory
         return true;
     return false;
 }
 
-bool isSymbolicLink(const char *path){
+bool isSymbolicLink(const char *path)
+{
     struct stat buf;
+    stat(path, &buf);
     if (S_ISLNK(buf.st_mode)) // Directory
         return true;
     return false;
 }
-

@@ -38,3 +38,9 @@
 int pathProvided(char flags[][MAX_FLAG_LEN], size_t len);
 
 void details(char dirname[]);
+
+bool isFile(const char *path);
+
+bool isDirectory(const char *path);
+
+bool isSymbolLink(const char *path);
