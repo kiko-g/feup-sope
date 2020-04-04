@@ -11,6 +11,9 @@ int main(int argc, char *argv[])
 }
 
 
+
+// ------------------- Directory Scanning -------------------------
+
 int recursiveScan(char* directory_name) {
     DIR *dir = opendir(args.path);
     struct dirent *ent;
@@ -44,8 +47,7 @@ int recursiveScan(char* directory_name) {
         }
         else {
             printf("UNKNOWN\n");
-        }     
-        
+        }         
     }
 
     return 0;
@@ -61,6 +63,8 @@ int scanFile(char* file_path) {
 }
 
 
+
+// ------------------- Argument Parsing -------------------------
 
 bool parseArguments(char * argv[],int argc){
 
@@ -110,52 +114,6 @@ int pathProvided(char flags[][MAX_FLAG_LEN], size_t len)
         return index;
     }
 }
-
-
-bool isFile(const char *path)
-{
-    struct stat buf;
-    int status = stat(path, &buf);
-    
-    if(status != 0) {
-        printf("\nError in stat: %d\n", status);
-    }
-
-    if (S_ISREG(buf.st_mode)) // File
-        return true;
-    return false;
-}
-
-bool isDirectory(const char *path)
-{
-    struct stat buf;
-    int status = stat(path, &buf);
-    
-    if(status != 0) {
-        printf("\nError in stat: %d\n", status);
-    }
-
-    if (S_ISDIR(buf.st_mode)) // Directory
-        return true;
-    return false;
-}
-
-bool isSymbolicLink(const char *path)
-{
-    struct stat buf;
-    int status = stat(path, &buf);
-    
-    if(status != 0) {
-        printf("\nError in stat: %d\n", status);
-    }
-
-    if (S_ISLNK(buf.st_mode)) // Symbolic Link
-        return true;
-    return false;
-}
-
-
-
 
 int validFlag(char *flag)
 {
@@ -218,6 +176,56 @@ int isPath(const char *path) {
     else
         return -1;
 }
+
+
+
+// ------------------- File Type Checking -------------------------
+
+bool isFile(const char *path)
+{
+    struct stat buf;
+    int status = stat(path, &buf);
+    
+    if(status != 0) {
+        printf("\nError in stat: %d\n", status);
+    }
+
+    if (S_ISREG(buf.st_mode)) // File
+        return true;
+    return false;
+}
+
+bool isDirectory(const char *path)
+{
+    struct stat buf;
+    int status = stat(path, &buf);
+    
+    if(status != 0) {
+        printf("\nError in stat: %d\n", status);
+    }
+
+    if (S_ISDIR(buf.st_mode)) // Directory
+        return true;
+    return false;
+}
+
+bool isSymbolicLink(const char *path)
+{
+    struct stat buf;
+    int status = stat(path, &buf);
+    
+    if(status != 0) {
+        printf("\nError in stat: %d\n", status);
+    }
+
+    if (S_ISLNK(buf.st_mode)) // Symbolic Link
+        return true;
+    return false;
+}
+
+
+
+// ------------------- File Printing -------------------------
 
 void printFile(char * file, long size){
     //Como descobrir o block size?
