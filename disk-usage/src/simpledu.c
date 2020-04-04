@@ -7,7 +7,7 @@ int main(int argc, char *argv[])
     DIR *dir = opendir(dirname);
     struct dirent *ent;
     struct stat buf;
-    struct Arguments args;
+    
 
     // parse flags
     // for (int i = 1; i < argc; ++i)
@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
 
         // apply different behaviors for files and directories
         if (isFile(ent->d_name))
-            printf("File: %-30s %ld Bytes\n", ent->d_name, buf.st_size);
+            printFile(ent->d_name, buf.st_size);
         else if (isDirectory(ent->d_name))
         {
             printf("Dir:  %-30s (can go deeper)\n", ent->d_name);
@@ -216,4 +216,13 @@ int isPath(const char *path) {
         return 2;
     else
         return -1;
+}
+
+void printFile(char * file, long size){
+    //Como descobrir o block size?
+    // if(args.bytes)
+    //     printf("File: %-30s %ld Bytes\n", file, size);
+    // else printf("File: %-30s %ld real Bytes\n", file, size / args.block_size);
+    printf("File: %-30s %ld Bytes\n", file, size);
+
 }

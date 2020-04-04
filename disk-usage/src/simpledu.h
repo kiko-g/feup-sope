@@ -29,6 +29,7 @@
 #define GREEN_TEXT              "\033[0;32m"
 #define RESET_TEXT_COLOR        "\033[0m"
 
+struct Arguments args;
 
 
 /**
@@ -55,3 +56,5 @@ bool activateFlag(char * flag, struct Arguments * args);
 bool parseArguments(char * argv[],int argc, struct Arguments * args);
 
 int isPath(const char *path);
+
+void printFile(char * file, long size);
