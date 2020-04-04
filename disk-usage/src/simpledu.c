@@ -9,25 +9,6 @@ int main(int argc, char *argv[])
     struct stat buf;
     
 
-    // parse flags
-    // for (int i = 1; i < argc; ++i)
-    // {
-    //     strcpy(flags[i - 1], argv[i]);
-    // }
-
-    // printf("FLAGS\n");
-    // for (int i = 0; i < argc - 1; ++i)
-    //     printf("%s%s%s\n", BLUE_TEXT, flags[i], RESET_TEXT_COLOR);
-
-    
-    //Isto funciona com outras pastas ou so com o diretorio atual?
-    // int index = pathProvided(flags, (size_t)argc - 1);
-    // if (index != -1){
-    //     //Nunca esta a entrar aqui!
-    //     dir = opendir(flags[index]);
-    //     printf("%s zas2",flags[index]);
-    // }
-
     if(!parseArguments(argv,argc)){
         printf("Error Parsing arguments");
         return 1;
@@ -44,31 +25,17 @@ int main(int argc, char *argv[])
         stat(ent->d_name, &buf);
         
         if (ent->d_type == DT_REG) {
-            printf("FILE\n");
+            printFile(ent->d_name, buf.st_size);
         }    
         else if (ent->d_type == DT_DIR) {
-            printf("DIRECTORY\n");
+            printf("Dir:  %-30s (can go deeper)\n", ent->d_name);
         }
         else if (ent->d_type == DT_LNK) {
             printf("SYMBOLIC LINK\n");
         }
         else {
-            printf("UNKNOWN\n");
-        }
-
-/*
-        if (isFile(ent->d_name)){
-             printFile(ent->d_name, buf.st_size);
-        }
-        else if (isDirectory(ent->d_name))
-        {
-            printf("Dir:  %-30s (can go deeper)\n", ent->d_name);
-        }
-        else if(isSymbolicLink(ent->d_name))
-        {
             printf("Is symbolic link");
         }
-*/        
         
     }
 
@@ -128,7 +95,6 @@ void details(char dirname[])
 {
     DIR *dir = opendir(dirname);
     struct dirent *ent;
-    struct stat buf;
 
     while ((ent = readdir(dir)) != NULL)
     {
@@ -148,20 +114,6 @@ void details(char dirname[])
         else {
             printf("UNKNOWN\n");
         }
-
-/*
-        stat(dirname, &buf);
-
-        // apply different behaviors for files and directories
-        if (isFile(dirname))
-            printf("File: %-30s %ld Bytes\n", dirname, buf.st_size);
-        else if (isDirectory(dirname))
-        {
-            printf("Directory: %-30s (can go deeper)\n", dirname);
-            details(dirname);
-        }
-        
-*/
     }
 }
 
