@@ -1,26 +1,15 @@
-# @ stops the Makefile from echoing to console
-CC=gcc
-CFLAGS=-Wall -Wextra -pedantic -Wno-unused-parameter #-Werror
-TARGETS = $(patsubst %.c,%,$(wildcard *.c))
+CC = gcc
+CFLAGS = -Wall
+OBJS = simpledu.o register.o
+XHDRS = simpledu.h register.h
+EXEC = simpledu
 
-define make_target
-$(1): $(1).o
-	$(CC) $(CFLAGS) $$^ -o $$@
-endef
+$(EXEC): $(OBJS)
+	$(CC) $(CFLAGS) $(OBJS) -o $@
 
-.PHONY: all clean
-all: $(TARGETS)
+%.o: %.c %.h $(XHDRS)
+	$(CC) $(CFLAGS) -c $<
 
-ifdef DEV_INFO
-DEV_FLAGS = -save-temps
-endif
-
-$(foreach TARGET,$(TARGETS),$(eval $(call make_target,$(TARGET))))
-
-%.o: %.c
-	$(CC) $(CFLAGS) $(DEV_FLAGS) -MMD -c $< -o $@
-	
-clean:
-	@rm -f $(TARGETS) *.o *.d *.i *.s
-
--include $(TARGETS:=.d)
+.PHONY : clean
+clean :
+	-rm $(OBJS) $(EXEC)

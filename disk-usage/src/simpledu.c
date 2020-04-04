@@ -1,7 +1,13 @@
 #include "simpledu.h"
+#include "register.h"
+
 
 int main(int argc, char *argv[])
 {
+
+    createRegistersFile();
+    
+
     char *dirname = ".";
     // char flags[argc][MAX_FLAG_LEN];
     DIR *dir = opendir(dirname);
@@ -14,6 +20,10 @@ int main(int argc, char *argv[])
         return 1;
     }
     dir = opendir(args.path);
+
+    createRegistersFile();
+
+    
     
 
     while ((ent = readdir(dir)) != NULL)
