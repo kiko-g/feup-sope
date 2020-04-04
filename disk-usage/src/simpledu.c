@@ -56,7 +56,7 @@ int recursiveScan(char* directory_name) {
                 perror("Error in fork\n");
                 exit(-1);
             }
-            else if (pid == 0) {
+            else if (pid == 0) {  // child process to analyze subdirectory
                 char * directory_path = (char*) malloc(MAX_CHAR_LEN);
                 sprintf(directory_path, "%s/%s", directory_name, ent->d_name);
                 next_dir_size = recursiveScan(directory_path);
