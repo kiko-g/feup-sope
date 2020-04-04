@@ -43,14 +43,20 @@ int main(int argc, char *argv[])
 
         stat(ent->d_name, &buf);
         
+        if (ent->d_type == DT_REG) {
+            printf("FILE\n");
+        }    
+        else if (ent->d_type == DT_DIR) {
+            printf("DIRECTORY\n");
+        }
+        else if (ent->d_type == DT_LNK) {
+            printf("SYMBOLIC LINK\n");
+        }
+        else {
+            printf("UNKNOWN\n");
+        }
 
-        // apply different behaviors for files and directories
-
-        // char str[1000] ; 
-        // sprintf(str,"cd %s",args.path);
-        // system(str);
-
-
+/*
         if (isFile(ent->d_name)){
              printFile(ent->d_name, buf.st_size);
         }
@@ -62,6 +68,7 @@ int main(int argc, char *argv[])
         {
             printf("Is symbolic link");
         }
+*/        
         
     }
 
@@ -124,6 +131,20 @@ void details(char dirname[])
         if (strcmp(dirname, ".") == 0 || strcmp(dirname, "..") == 0)
             continue;
 
+        if (ent->d_type == DT_REG) {
+            printf("FILE\n");
+        }    
+        else if (ent->d_type == DT_DIR) {
+            printf("DIRECTORY\n");
+        }
+        else if (ent->d_type == DT_LNK) {
+            printf("SYMBOLIC LINK\n");
+        }
+        else {
+            printf("UNKNOWN\n");
+        }
+
+/*
         stat(dirname, &buf);
 
         // apply different behaviors for files and directories
@@ -134,13 +155,20 @@ void details(char dirname[])
             printf("Directory: %-30s (can go deeper)\n", dirname);
             details(dirname);
         }
+        
+*/
     }
 }
 
 bool isFile(const char *path)
 {
     struct stat buf;
-    stat(path, &buf);
+    int status = stat(path, &buf);
+    
+    if(status != 0) {
+        printf("\nError in stat: %d\n", status);
+    }
+
     if (S_ISREG(buf.st_mode)) // File
         return true;
     return false;
@@ -149,7 +177,12 @@ bool isFile(const char *path)
 bool isDirectory(const char *path)
 {
     struct stat buf;
-    stat(path, &buf);
+    int status = stat(path, &buf);
+    
+    if(status != 0) {
+        printf("\nError in stat: %d\n", status);
+    }
+
     if (S_ISDIR(buf.st_mode)) // Directory
         return true;
     return false;
@@ -158,7 +191,12 @@ bool isDirectory(const char *path)
 bool isSymbolicLink(const char *path)
 {
     struct stat buf;
-    stat(path, &buf);
+    int status = stat(path, &buf);
+    
+    if(status != 0) {
+        printf("\nError in stat: %d\n", status);
+    }
+
     if (S_ISLNK(buf.st_mode)) // Symbolic Link
         return true;
     return false;
