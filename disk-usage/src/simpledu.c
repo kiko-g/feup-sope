@@ -2,78 +2,65 @@
 
 int main(int argc, char *argv[])
 {
-    char *dirname = ".";
-    // char flags[argc][MAX_FLAG_LEN];
-    DIR *dir = opendir(dirname);
-    struct dirent *ent;
-    struct stat buf;
-    
-
-    // parse flags
-    // for (int i = 1; i < argc; ++i)
-    // {
-    //     strcpy(flags[i - 1], argv[i]);
-    // }
-
-    // printf("FLAGS\n");
-    // for (int i = 0; i < argc - 1; ++i)
-    //     printf("%s%s%s\n", BLUE_TEXT, flags[i], RESET_TEXT_COLOR);
-
-    
-    //Isto funciona com outras pastas ou so com o diretorio atual?
-    // int index = pathProvided(flags, (size_t)argc - 1);
-    // if (index != -1){
-    //     //Nunca esta a entrar aqui!
-    //     dir = opendir(flags[index]);
-    //     printf("%s zas2",flags[index]);
-    // }
-
     if(!parseArguments(argv,argc)){
         printf("Error Parsing arguments");
         return 1;
     }
-    dir = opendir(args.path);
-    
 
+    return recursiveScan(args.path);
+}
+
+
+int recursiveScan(char* directory_name) {
+    DIR *dir = opendir(args.path);
+    struct dirent *ent;
+    
     while ((ent = readdir(dir)) != NULL)
     {
         // skip showing current folder and parent folder
         if (strcmp(ent->d_name, ".") == 0 || strcmp(ent->d_name, "..") == 0)
             continue;
-
-        stat(ent->d_name, &buf);
         
         if (ent->d_type == DT_REG) {
             printf("FILE\n");
+            printf("Name: %s\n", ent->d_name);
+
+            char * file_path = (char*) malloc(MAX_CHAR_LEN);
+            sprintf(file_path, "%s/%s", directory_name, ent->d_name);
+
+            printf("Path: %s\n", file_path);
+            scanFile(file_path);
+
+            printf("\n");
+            free(file_path);
         }    
         else if (ent->d_type == DT_DIR) {
             printf("DIRECTORY\n");
+            printf("Name: %s\n\n", ent->d_name);            
         }
         else if (ent->d_type == DT_LNK) {
             printf("SYMBOLIC LINK\n");
+            printf("Name: %s\n\n", ent->d_name);            
         }
         else {
             printf("UNKNOWN\n");
-        }
-
-/*
-        if (isFile(ent->d_name)){
-             printFile(ent->d_name, buf.st_size);
-        }
-        else if (isDirectory(ent->d_name))
-        {
-            printf("Dir:  %-30s (can go deeper)\n", ent->d_name);
-        }
-        else if(isSymbolicLink(ent->d_name))
-        {
-            printf("Is symbolic link");
-        }
-*/        
+        }     
         
     }
 
     return 0;
 }
+
+
+int scanFile(char* file_path) {
+    struct stat st;
+    stat(file_path, &st);
+    printf("Size: %ld Bytes\n", st.st_size);
+
+    return 0;
+}
+
+
 
 bool parseArguments(char * argv[],int argc){
 
@@ -124,46 +111,6 @@ int pathProvided(char flags[][MAX_FLAG_LEN], size_t len)
     }
 }
 
-void details(char dirname[])
-{
-    DIR *dir = opendir(dirname);
-    struct dirent *ent;
-    struct stat buf;
-
-    while ((ent = readdir(dir)) != NULL)
-    {
-        // skip showing current folder and parent folder
-        if (strcmp(dirname, ".") == 0 || strcmp(dirname, "..") == 0)
-            continue;
-
-        if (ent->d_type == DT_REG) {
-            printf("FILE\n");
-        }    
-        else if (ent->d_type == DT_DIR) {
-            printf("DIRECTORY\n");
-        }
-        else if (ent->d_type == DT_LNK) {
-            printf("SYMBOLIC LINK\n");
-        }
-        else {
-            printf("UNKNOWN\n");
-        }
-
-/*
-        stat(dirname, &buf);
-
-        // apply different behaviors for files and directories
-        if (isFile(dirname))
-            printf("File: %-30s %ld Bytes\n", dirname, buf.st_size);
-        else if (isDirectory(dirname))
-        {
-            printf("Directory: %-30s (can go deeper)\n", dirname);
-            details(dirname);
-        }
-        
-*/
-    }
-}
 
 bool isFile(const char *path)
 {

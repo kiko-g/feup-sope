@@ -10,6 +10,7 @@
 #include "arguments.h"
 
 #define MAX_FLAG_LEN 50
+#define MAX_CHAR_LEN 256
 #define ALL_FLAG_SHORT          "-a"
 #define ALL_FLAG_LONG           "--all"
 #define BYTES_FLAG_SHORT        "-b"
@@ -41,13 +42,17 @@ struct Arguments args;
  */
 int pathProvided(char flags[][MAX_FLAG_LEN], size_t len);
 
-void details(char dirname[]);
+int recursiveScan(char* directory_name);
+
+int scanFile(char* file_path);
+
 
 bool isFile(const char *path);
 
 bool isDirectory(const char *path);
 
 bool isSymbolicLink(const char *path);
+
 
 int validFlag(char * flag);
 
@@ -56,5 +61,6 @@ bool activateFlag(char * flag);
 bool parseArguments(char * argv[],int argc);
 
 int isPath(const char *path);
+
 
 void printFile(char * file, long size);
