@@ -51,9 +51,9 @@ bool isSymbolicLink(const char *path);
 
 int validFlag(char * flag);
 
-bool activateFlag(char * flag, struct Arguments * args);
+bool activateFlag(char * flag);
 
-bool parseArguments(char * argv[],int argc, struct Arguments * args);
+bool parseArguments(char * argv[],int argc);
 
 int isPath(const char *path);
 
