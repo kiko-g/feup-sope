@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
     //     printf("%s zas2",flags[index]);
     // }
 
-    if(!parseArguments(argv,argc,&args)){
+    if(!parseArguments(argv,argc)){
         printf("Error Parsing arguments");
         return 1;
     }
@@ -75,15 +75,20 @@ int main(int argc, char *argv[])
     return 0;
 }
 
-bool parseArguments(char * argv[],int argc, struct Arguments * args){
-        
-    //TODO: Falta adicionar o path!
+bool parseArguments(char * argv[],int argc){
+
+
+    bool foundPath = false;
     for (int i = 1; i < argc; i++)
-        if(!activateFlag(argv[i],args)){
+        if(!activateFlag(argv[i])){
             if(isPath(argv[i]) != -1){
-                strcpy(args->path,argv[i]);
+                foundPath = true;
+                strcpy(args.path,argv[i]);
             } else return false;
         }
+    if(!foundPath){
+        strcpy(args.path,".");
+    }
     return true;
 }
 
@@ -216,35 +221,35 @@ int validFlag(char *flag)
     return -1;
 }
 
-bool activateFlag(char * flag, struct Arguments * args){
+bool activateFlag(char * flag){
     int index = validFlag(flag);
     if(index == -1) return false;
     else if(!strcmp(ARGUMENTS[index],ALL_FLAG_SHORT) || !strcmp(ARGUMENTS[index],ALL_FLAG_LONG)){
-        args->all = true;
+        args.all = true;
         return true;
     }
     else if(!strcmp(ARGUMENTS[index],BYTES_FLAG_SHORT) || !strcmp(ARGUMENTS[index],BYTES_FLAG_LONG)){
-        args->bytes = true;
+        args.bytes = true;
         return true;
     }
     else if(!strcmp(ARGUMENTS[index],BLOCKSIZE_FLAG_SHORT) || !strcmp(ARGUMENTS[index],BLOCKSIZE_FLAG_LONG)){
-        args->block_size = true;
+        args.block_size = true;
         return true;
     }
     else if(!strcmp(ARGUMENTS[index],COUNTLINKS_FLAG_SHORT) || !strcmp(ARGUMENTS[index],COUNTLINKS_FLAG_LONG)){
-        args->countLinks = true;
+        args.countLinks = true;
         return true;
     }
     else if(!strcmp(ARGUMENTS[index],LINK_FLAG_SHORT) || !strcmp(ARGUMENTS[index],LINK_FLAG_LONG)){
-        args->deference = true;
+        args.deference = true;
         return true;
     }
     else if(!strcmp(ARGUMENTS[index],SEPARATEDIRS_FLAG_SHORT) || !strcmp(ARGUMENTS[index],SEPARATEDIRS_LONG)){
-        args->separateDirs = true;
+        args.separateDirs = true;
         return true;
     }
     else if(!strcmp(ARGUMENTS[index],MAX_DEPTH_FLAG)){
-        args->max_depth = 1; //TODO
+        args.max_depth = 1; //TODO
         return true;
     }
     return false;
