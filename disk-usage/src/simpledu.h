@@ -47,7 +47,7 @@ bool isFile(const char *path);
 
 bool isDirectory(const char *path);
 
-bool isSymbolLink(const char *path);
+bool isSymbolicLink(const char *path);
 
 int validFlag(char * flag);
 

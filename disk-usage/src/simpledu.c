@@ -32,8 +32,7 @@ int main(int argc, char *argv[])
         printf("Error Parsing arguments");
         return 1;
     }
-    // dir = opendir(args.path);
-    // printf("%s zas",args.path);
+    dir = opendir(args.path);
     
 
     while ((ent = readdir(dir)) != NULL)
@@ -43,22 +42,34 @@ int main(int argc, char *argv[])
             continue;
 
         stat(ent->d_name, &buf);
+        
 
         // apply different behaviors for files and directories
-        if (isFile(ent->d_name))
-            printFile(ent->d_name, buf.st_size);
+
+        // char str[1000] ; 
+        // sprintf(str,"cd %s",args.path);
+        // system(str);
+
+
+        if (isFile(ent->d_name)){
+             printFile(ent->d_name, buf.st_size);
+        }
         else if (isDirectory(ent->d_name))
         {
             printf("Dir:  %-30s (can go deeper)\n", ent->d_name);
-            // details(ent->d_name);
         }
+        else if(isSymbolicLink(ent->d_name))
+        {
+            printf("Is symbolic link");
+        }
+        
     }
 
     return 0;
 }
 
 bool parseArguments(char * argv[],int argc, struct Arguments * args){
-    
+        
     //TODO: Falta adicionar o path!
     for (int i = 1; i < argc; i++)
         if(!activateFlag(argv[i],args)){
