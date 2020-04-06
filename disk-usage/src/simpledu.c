@@ -12,14 +12,15 @@ int main(int argc, char *argv[])
         printf("Error Parsing arguments");
         return 1;
     }
-    return recursiveScan(args.path);
-    return 0;
+    return recursiveScan(args.path,args.max_depth);
 }
 
 // ------------------- Directory Scanning -------------------------
 
-int recursiveScan(char *directory_name)
+int recursiveScan(char *directory_name,int max_depth)
 {
+    if(max_depth == 0) return 0;
+
     DIR *dir = opendir(directory_name);
     struct dirent *ent;
 
@@ -34,25 +35,22 @@ int recursiveScan(char *directory_name)
         // regular file
         if (ent->d_type == DT_REG && args.all)
         {
-            printf("FILE\n");
-            printf("Name: %s\n", ent->d_name);
-
             char *file_path = (char *)malloc(MAX_CHAR_LEN);
             sprintf(file_path, "%s/%s", directory_name, ent->d_name);
+            long file_size = scanFile(file_path);
+            current_dir_size += file_size;
 
-            printf("Path: %s\n", file_path);
-            current_dir_size += scanFile(file_path);
+            printf("%ld        %s\n", file_size,file_path);
 
-            printf("\n");
             free(file_path);
         }
 
         // directory
         else if (ent->d_type == DT_DIR)
         {
-            printf("DIRECTORY\n");
-            printf("Name: %s\n\n", ent->d_name);
-            int next_dir_size = 0;
+            // printf("DIRECTORY\n");
+            // printf("Name: %s\n\n", ent->d_name);
+            long next_dir_size = 0;
 
             pid_t pid = fork();
             if (pid < 0)
@@ -64,8 +62,9 @@ int recursiveScan(char *directory_name)
             { // child process to analyze subdirectory
                 char *directory_path = (char *)malloc(MAX_CHAR_LEN);
                 sprintf(directory_path, "%s/%s", directory_name, ent->d_name);
-                next_dir_size = recursiveScan(directory_path);
-                printf("Size: %d Bytes\n\n", next_dir_size);
+                next_dir_size = recursiveScan(directory_path,max_depth-1);
+                printf("%ld        %s\n", next_dir_size,directory_path);
+
                 return next_dir_size;
             }
         }
@@ -98,8 +97,6 @@ int scanFile(char *file_path)
 {
     struct stat st;
     stat(file_path, &st);
-    printf("Size: %ld Bytes\n", st.st_size);
-
     return st.st_size;
 }
 
@@ -228,6 +225,7 @@ bool activateFlag(char *flag, int number)
     else if (!strcmp(ARGUMENTS[index], MAX_DEPTH_FLAG))
     {
         args.max_depth = number; 
+        args.max_depth_flag = true;
         return true;
     }
     return false;

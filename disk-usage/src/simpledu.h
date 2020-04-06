@@ -8,6 +8,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <dirent.h>
+#include <limits.h>
 #include "arguments.h"
 
 #define MAX_FLAG_LEN 50
@@ -31,7 +32,7 @@
 #define GREEN_TEXT              "\033[0;32m"
 #define RESET_TEXT_COLOR        "\033[0m"
 
-struct Arguments args;
+struct Arguments args = { .max_depth = INT_MAX};
 
 
 /**
@@ -43,7 +44,7 @@ struct Arguments args;
  */
 int pathProvided(char flags[][MAX_FLAG_LEN], size_t len);
 
-int recursiveScan(char* directory_name);
+int recursiveScan(char* directory_name, int max_depth);
 
 int scanFile(char* file_path);
 

@@ -1,2 +1,2 @@
-make clean && make && clear && ./simpledu --all whatever && make clean
+make clean && make && clear &&  ./simpledu -a  --max-depth=2  whatever && make clean
 # /home/kiko/Pictures

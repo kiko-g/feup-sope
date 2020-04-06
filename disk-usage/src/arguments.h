@@ -7,5 +7,6 @@ struct Arguments {
     bool deference;
     bool separateDirs;
     int max_depth;
+    bool max_depth_flag;
     char path[256];
 };
