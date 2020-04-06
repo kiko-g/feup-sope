@@ -1,7 +1,8 @@
 struct Arguments {
     bool all;
     bool bytes;
-    bool block_size;
+    bool block_size_flag;
+    int block_size;
     bool countLinks;
     bool deference;
     bool separateDirs;

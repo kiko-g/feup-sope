@@ -1,29 +1,28 @@
 #include "simpledu.h"
 #include "register.h"
 
-
 static pid_t ogPid;
 
 int main(int argc, char *argv[])
 {
     ogPid = getpid();
 
-    if(!parseArguments(argv,argc)){
+    if (!parseArguments(argv, argc))
+    {
         printf("Error Parsing arguments");
         return 1;
     }
-
     return recursiveScan(args.path);
+    return 0;
 }
-
-
 
 // ------------------- Directory Scanning -------------------------
 
-int recursiveScan(char* directory_name) {
+int recursiveScan(char *directory_name)
+{
     DIR *dir = opendir(directory_name);
     struct dirent *ent;
-    
+
     int current_dir_size = 0;
 
     while ((ent = readdir(dir)) != NULL)
@@ -31,13 +30,14 @@ int recursiveScan(char* directory_name) {
         // skip showing current folder and parent folder
         if (strcmp(ent->d_name, ".") == 0 || strcmp(ent->d_name, "..") == 0)
             continue;
-        
+
         // regular file
-        if (ent->d_type == DT_REG) {
+        if (ent->d_type == DT_REG && args.all)
+        {
             printf("FILE\n");
             printf("Name: %s\n", ent->d_name);
 
-            char * file_path = (char*) malloc(MAX_CHAR_LEN);
+            char *file_path = (char *)malloc(MAX_CHAR_LEN);
             sprintf(file_path, "%s/%s", directory_name, ent->d_name);
 
             printf("Path: %s\n", file_path);
@@ -45,21 +45,24 @@ int recursiveScan(char* directory_name) {
 
             printf("\n");
             free(file_path);
-        }    
+        }
 
         // directory
-        else if (ent->d_type == DT_DIR) {
+        else if (ent->d_type == DT_DIR)
+        {
             printf("DIRECTORY\n");
-            printf("Name: %s\n\n", ent->d_name); 
-            int next_dir_size = 0;   
+            printf("Name: %s\n\n", ent->d_name);
+            int next_dir_size = 0;
 
             pid_t pid = fork();
-            if(pid < 0) {
+            if (pid < 0)
+            {
                 perror("Error in fork\n");
                 exit(-1);
             }
-            else if (pid == 0) {  // child process to analyze subdirectory
-                char * directory_path = (char*) malloc(MAX_CHAR_LEN);
+            else if (pid == 0)
+            { // child process to analyze subdirectory
+                char *directory_path = (char *)malloc(MAX_CHAR_LEN);
                 sprintf(directory_path, "%s/%s", directory_name, ent->d_name);
                 next_dir_size = recursiveScan(directory_path);
                 printf("Size: %d Bytes\n\n", next_dir_size);
@@ -68,28 +71,31 @@ int recursiveScan(char* directory_name) {
         }
 
         // symbolic link
-        else if (ent->d_type == DT_LNK) {
+        else if (ent->d_type == DT_LNK)
+        {
             printf("SYMBOLIC LINK\n");
-            printf("Name: %s\n\n", ent->d_name);            
+            printf("Name: %s\n\n", ent->d_name);
         }
 
         // other (socket, unknown...)
-        else {
-            printf("OTHER\n");
-        }         
+        else
+        {
+            // printf("OTHER\n");
+        }
     }
 
     closedir(dir);
 
     // wait for child processes to finish
     pid_t wpid;
-    while ((wpid = wait(NULL)) > 0);
+    while ((wpid = wait(NULL)) > 0)
+        ;
 
     return current_dir_size;
 }
 
-
-int scanFile(char* file_path) {
+int scanFile(char *file_path)
+{
     struct stat st;
     stat(file_path, &st);
     printf("Size: %ld Bytes\n", st.st_size);
@@ -97,26 +103,44 @@ int scanFile(char* file_path) {
     return st.st_size;
 }
 
-
-
 // ------------------- Argument Parsing -------------------------
 
-bool parseArguments(char * argv[],int argc){
+bool parseArguments(char *argv[], int argc)
+{
 
     bool foundPath = false;
+    char *flag;
 
-    for (int i = 1; i < argc; i++) {
-        if(!activateFlag(argv[i])){
-            if(isPath(argv[i]) != -1){
-                foundPath = true;
-                strcpy(args.path,argv[i]);
-            } else return false;
+    for (int i = 1; i < argc; i++)
+    {
+        flag = strtok(argv[i], "=");
+        int flagIndex = validFlag(flag);
+        if (flagIndex != -1)
+        {
+            int number = -1;
+            if (flagIndex == 12 || flagIndex == 5)
+            { //If it is block-size or max-depth
+                number = atoi(strtok(NULL, "="));
+            }
+            else if (flagIndex == 4)
+            {
+                number = atoi(argv[i + 1]);
+                i++;
+            }
+            if (!activateFlag(flag, number))
+                printf("Error na flag %s", flag);
         }
+        else if (isPath(argv[i]) != -1)
+        {
+            foundPath = true;
+            strcpy(args.path, argv[i]);
+        }
+        else
+            return false;
     }
 
-    if(!foundPath){
-        strcpy(args.path,".");
-    }
+    if (!foundPath)
+        strcpy(args.path, ".");
 
     return true;
 }
@@ -157,42 +181,53 @@ int validFlag(char *flag)
 {
     for (int i = 0; i < 13; i++)
     {
-        if (!strcmp(flag, ARGUMENTS[i])){
+        if (!strcmp(flag, ARGUMENTS[i]))
+        {
             return i; //Returns position in the ARGUMENTS array
         }
     }
     return -1;
 }
 
-bool activateFlag(char * flag){
+bool activateFlag(char *flag, int number)
+{
     int index = validFlag(flag);
-    if(index == -1) return false;
-    else if(!strcmp(ARGUMENTS[index],ALL_FLAG_SHORT) || !strcmp(ARGUMENTS[index],ALL_FLAG_LONG)){
+    if (index == -1)
+        return false;
+    else if (!strcmp(ARGUMENTS[index], ALL_FLAG_SHORT) || !strcmp(ARGUMENTS[index], ALL_FLAG_LONG))
+    {
         args.all = true;
         return true;
     }
-    else if(!strcmp(ARGUMENTS[index],BYTES_FLAG_SHORT) || !strcmp(ARGUMENTS[index],BYTES_FLAG_LONG)){
+    else if (!strcmp(ARGUMENTS[index], BYTES_FLAG_SHORT) || !strcmp(ARGUMENTS[index], BYTES_FLAG_LONG))
+    {
         args.bytes = true;
         return true;
     }
-    else if(!strcmp(ARGUMENTS[index],BLOCKSIZE_FLAG_SHORT) || !strcmp(ARGUMENTS[index],BLOCKSIZE_FLAG_LONG)){
-        args.block_size = true;
+    else if (!strcmp(ARGUMENTS[index], BLOCKSIZE_FLAG_SHORT) || !strcmp(ARGUMENTS[index], BLOCKSIZE_FLAG_LONG))
+    {
+        args.block_size_flag = true;
+        args.block_size = number;
         return true;
     }
-    else if(!strcmp(ARGUMENTS[index],COUNTLINKS_FLAG_SHORT) || !strcmp(ARGUMENTS[index],COUNTLINKS_FLAG_LONG)){
+    else if (!strcmp(ARGUMENTS[index], COUNTLINKS_FLAG_SHORT) || !strcmp(ARGUMENTS[index], COUNTLINKS_FLAG_LONG))
+    {
         args.countLinks = true;
         return true;
     }
-    else if(!strcmp(ARGUMENTS[index],LINK_FLAG_SHORT) || !strcmp(ARGUMENTS[index],LINK_FLAG_LONG)){
+    else if (!strcmp(ARGUMENTS[index], LINK_FLAG_SHORT) || !strcmp(ARGUMENTS[index], LINK_FLAG_LONG))
+    {
         args.deference = true;
         return true;
     }
-    else if(!strcmp(ARGUMENTS[index],SEPARATEDIRS_FLAG_SHORT) || !strcmp(ARGUMENTS[index],SEPARATEDIRS_LONG)){
+    else if (!strcmp(ARGUMENTS[index], SEPARATEDIRS_FLAG_SHORT) || !strcmp(ARGUMENTS[index], SEPARATEDIRS_LONG))
+    {
         args.separateDirs = true;
         return true;
     }
-    else if(!strcmp(ARGUMENTS[index],MAX_DEPTH_FLAG)){
-        args.max_depth = 1; //TODO
+    else if (!strcmp(ARGUMENTS[index], MAX_DEPTH_FLAG))
+    {
+        args.max_depth = number; 
         return true;
     }
     return false;
@@ -201,7 +236,8 @@ bool activateFlag(char * flag){
 // if path is not valid return -1
 // if file return 0
 // if directory return 1
-int isPath(const char *path) {
+int isPath(const char *path)
+{
     struct stat path_stat;
     if (lstat(path, &path_stat) < 0) // Invalid path
         return -1;
@@ -209,13 +245,11 @@ int isPath(const char *path) {
         return 1;
     else if (isFile(path)) // File
         return 0;
-    else if(isSymbolicLink(path))
+    else if (isSymbolicLink(path))
         return 2;
     else
         return -1;
 }
-
-
 
 // ------------------- File Type Checking -------------------------
 
@@ -223,8 +257,9 @@ bool isFile(const char *path)
 {
     struct stat buf;
     int status = stat(path, &buf);
-    
-    if(status != 0) {
+
+    if (status != 0)
+    {
         printf("\nError in stat: %d\n", status);
     }
 
@@ -237,8 +272,9 @@ bool isDirectory(const char *path)
 {
     struct stat buf;
     int status = stat(path, &buf);
-    
-    if(status != 0) {
+
+    if (status != 0)
+    {
         printf("\nError in stat: %d\n", status);
     }
 
@@ -251,8 +287,9 @@ bool isSymbolicLink(const char *path)
 {
     struct stat buf;
     int status = stat(path, &buf);
-    
-    if(status != 0) {
+
+    if (status != 0)
+    {
         printf("\nError in stat: %d\n", status);
     }
 
@@ -261,15 +298,13 @@ bool isSymbolicLink(const char *path)
     return false;
 }
 
-
-
 // ------------------- File Printing -------------------------
 
-void printFile(char * file, long size){
+void printFile(char *file, long size)
+{
     //Como descobrir o block size?
     // if(args.bytes)
     //     printf("File: %-30s %ld Bytes\n", file, size);
     // else printf("File: %-30s %ld real Bytes\n", file, size / args.block_size);
     printf("File: %-30s %ld Bytes\n", file, size);
-
 }
