@@ -62,6 +62,7 @@ int recursiveScan(char *directory_name,int max_depth)
             { // child process to analyze subdirectory
                 char *directory_path = (char *)malloc(MAX_CHAR_LEN);
                 sprintf(directory_path, "%s/%s", directory_name, ent->d_name);
+
                 next_dir_size = recursiveScan(directory_path,max_depth-1);
                 printf("%ld        %s\n", next_dir_size,directory_path);
 
