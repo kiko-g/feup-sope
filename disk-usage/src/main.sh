@@ -1,2 +1,2 @@
-make clean && make && clear && ./simpledu --all --whatever && make clean
+make clean && make && clear && ./simpledu --all whatever && make clean
 # /home/kiko/Pictures

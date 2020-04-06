@@ -1,4 +1,6 @@
 #include "simpledu.h"
+#include "register.h"
+
 
 static pid_t ogPid;
 
