@@ -39,7 +39,7 @@ struct Register createRegister(int action)
 
 void writeRegister(const struct Register *reg)
 {
-    fprintf(registersFile, "Instant: %.2ld - PID: %.8d - Action %s - Info %s\n", reg->instant, reg->pid, actionString(reg->action), reg->info);
+    fprintf(registersFile, "%.2ld - %.8d - %s - %s\n", reg->instant, reg->pid, actionString(reg->action), reg->info);
 }
 
 void registerCreate(char *argv[], int argc) {
