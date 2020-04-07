@@ -7,12 +7,13 @@
 #include <fcntl.h>
 #include <dirent.h>
 #include "parser.h"
+#include "signals.h"
 
 extern struct Arguments args;
 
 int main(int argc, char *argv[])
 {
-    // signalHandler();
+    signalHandler();
 
     if (!parseArguments(argv, argc))
     {

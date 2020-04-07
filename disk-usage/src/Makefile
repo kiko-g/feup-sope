@@ -1,7 +1,7 @@
 CC = gcc
 CFLAGS = -Wall
-OBJS = simpledu.o register.o parser.o
-XHDRS = simpledu.h register.h parser.h
+OBJS = simpledu.o register.o parser.o signals.o
+XHDRS = simpledu.h register.h parser.h signals.h
 EXEC = simpledu
 
 $(EXEC): $(OBJS)
