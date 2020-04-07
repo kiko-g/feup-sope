@@ -39,8 +39,12 @@ int recursiveScan(char *directory_name, int max_depth)
     while ((ent = readdir(dir)) != NULL)
     {
         // skip showing current folder and parent folder
-        if (strcmp(ent->d_name, ".") == 0 || strcmp(ent->d_name, "..") == 0)
+        if (strcmp(ent->d_name, "..") == 0)
             continue;
+        else if(strcmp(ent->d_name, ".") == 0) {
+            current_dir_size += scanFile(directory_name);
+            continue;
+        }
 
         // regular file
         if ((ent->d_type == DT_REG || ent->d_type == DT_LNK)) {
