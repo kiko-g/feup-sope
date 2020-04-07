@@ -7,8 +7,10 @@
 #include <fcntl.h>
 #include <dirent.h>
 #include "parser.h"
+#include "signals.h"
 
 extern struct Arguments args;
+extern bool received_sigint;
 
 int main(int argc, char *argv[])
 {
@@ -98,12 +100,6 @@ int recursiveScan(char *directory_name, int max_depth)
                 exit(0);
             }
         }
-        
-        // other (socket, unknown...)
-        else
-        {
-            // printf("OTHER\n");
-        }
     }
 
     closedir(dir);
@@ -123,12 +119,10 @@ long scanFile(char *file_path)
         lstat(file_path, &st);
 
     //Checks -B and -b flag
-    if (args.bytes)
+    if (args.bytes) 
         return st.st_size;
     else if (args.block_size_flag)
-    {
         return st.st_blocks * 512 / args.block_size;
-    }
     else
         return st.st_blocks / 2;
 }
