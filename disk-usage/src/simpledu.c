@@ -34,7 +34,7 @@ int recursiveScan(char *directory_name, int max_depth)
             continue;
 
         // regular file
-        if (ent->d_type == DT_REG && args.all)
+        if ((ent->d_type == DT_REG || ent->d_type == DT_LNK) && args.all)
         {
             char *file_path = (char *)malloc(MAX_CHAR_LEN);
             sprintf(file_path, "%s/%s", directory_name, ent->d_name);
@@ -70,14 +70,6 @@ int recursiveScan(char *directory_name, int max_depth)
                 return next_dir_size;
             }
         }
-
-        // symbolic link
-        else if (ent->d_type == DT_LNK)
-        {
-            printf("SYMBOLIC LINK\n");
-            printf("Name: %s\n\n", ent->d_name);
-        }
-
         // other (socket, unknown...)
         else
         {
@@ -97,14 +89,19 @@ int recursiveScan(char *directory_name, int max_depth)
 
 long scanFile(char *file_path)
 {
+    //Checks deference flag
     struct stat st;
-    stat(file_path, &st);
-
+    if(args.deference) stat(file_path, &st);
+    else lstat(file_path, &st);
+    
+    //Checks -B and -b flag
     if (args.bytes) return st.st_size;
     else if (args.block_size_flag){
         return st.st_blocks * 512 / args.block_size;
     } else return st.st_blocks / 2;
 }
+
+
 
 // ------------------- Argument Parsing -------------------------
 
