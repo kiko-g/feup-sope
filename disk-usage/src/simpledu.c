@@ -34,42 +34,64 @@ int recursiveScan(char *directory_name, int max_depth)
             continue;
 
         // regular file
-        if ((ent->d_type == DT_REG || ent->d_type == DT_LNK) && args.all)
-        {
+        if ((ent->d_type == DT_REG || ent->d_type == DT_LNK)) {
             char *file_path = (char *)malloc(MAX_CHAR_LEN);
             sprintf(file_path, "%s/%s", directory_name, ent->d_name);
             long file_size = scanFile(file_path);
             current_dir_size += file_size;
 
-            printf("%ld        %s\n", file_size, file_path);
+            if(args.all) {
+                printf("%ld\t%s\n", file_size, file_path);
+            }
 
             free(file_path);
         }
 
         // directory
-        else if (ent->d_type == DT_DIR)
-        {
+        else if (ent->d_type == DT_DIR) {
             // printf("DIRECTORY\n");
             // printf("Name: %s\n\n", ent->d_name);
-            long next_dir_size = 0;
+            int filedes[2];
+
+            if (pipe(filedes) < 0) {
+                perror("Error in pipe creation\n");
+                exit(-1);
+            }
 
             pid_t pid = fork();
-            if (pid < 0)
-            {
+
+            if (pid < 0) {
                 perror("Error in fork\n");
                 exit(-1);
             }
-            else if (pid == 0)
-            { // child process to analyze subdirectory
+            else if (pid > 0) { // parent process that waits for childs
+                close(filedes[WRITE]);
+
+                // wait for child processes to finish
+                pid_t wpid;
+                while ((wpid = wait(NULL)) > 0);
+
+                if(!args.separateDirs) {
+                    int next_dir_size;
+                    read(filedes[READ], &next_dir_size, sizeof(int));
+                    current_dir_size += next_dir_size;
+                }
+
+            }
+            else { // child process to analyze subdirectory
+                close(filedes[READ]);
                 char *directory_path = (char *)malloc(MAX_CHAR_LEN);
                 sprintf(directory_path, "%s/%s", directory_name, ent->d_name);
 
-                next_dir_size = recursiveScan(directory_path, max_depth - 1);
-                printf("%ld        %s\n", next_dir_size, directory_path);
+                int next_dir_size = recursiveScan(directory_path, max_depth - 1);
+                if(!args.separateDirs) {
+                    write(filedes[WRITE], &next_dir_size, sizeof(next_dir_size));
+                }
 
-                return next_dir_size;
+                exit(0);
             }
         }
+        
         // other (socket, unknown...)
         else
         {
@@ -79,10 +101,7 @@ int recursiveScan(char *directory_name, int max_depth)
 
     closedir(dir);
 
-    // wait for child processes to finish
-    pid_t wpid;
-    while ((wpid = wait(NULL)) > 0)
-        ;
+    printf("%d\t%s\n", current_dir_size, directory_name);
 
     return current_dir_size;
 }
