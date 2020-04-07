@@ -14,7 +14,7 @@ extern bool received_sigint;
 
 int main(int argc, char *argv[])
 {
-    // signalHandler();
+    signalHandler();
 
     if (!parseArguments(argv, argc)) {
         printf("Error Parsing arguments");

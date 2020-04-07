@@ -1,15 +1,8 @@
+
 #include <stdbool.h>
-#include <stdlib.h> 
-#include <signal.h>
 
-/**
- * @brief Handler for SigInt
- * 
- */
-void sigintHandler();
+void signalHandler(); 
 
-/**
- * @brief Enables signal handlers
- * 
- */
-void enableSignalHandlers();
+void sigint_handler(int signo);
+
+bool askTerminateprogram();
