@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
 
 int recursiveScan(char *directory_name, int max_depth)
 {
-    if (max_depth == 0)
+    if (max_depth == -1)
         return 0;
 
     DIR *dir = opendir(directory_name);
@@ -110,17 +110,21 @@ long scanFile(char *file_path)
 {
     //Checks deference flag
     struct stat st;
-    if(args.deference) stat(file_path, &st);
-    else lstat(file_path, &st);
-    
+    if (args.deference)
+        stat(file_path, &st);
+    else
+        lstat(file_path, &st);
+
     //Checks -B and -b flag
-    if (args.bytes) return st.st_size;
-    else if (args.block_size_flag){
+    if (args.bytes)
+        return st.st_size;
+    else if (args.block_size_flag)
+    {
         return st.st_blocks * 512 / args.block_size;
-    } else return st.st_blocks / 2;
+    }
+    else
+        return st.st_blocks / 2;
 }
-
-
 
 // ------------------- Argument Parsing -------------------------
 
