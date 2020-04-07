@@ -46,7 +46,7 @@ int pathProvided(char flags[][MAX_FLAG_LEN], size_t len);
 
 int recursiveScan(char* directory_name, int max_depth);
 
-int scanFile(char* file_path);
+long scanFile(char* file_path);
 
 
 bool isFile(const char *path);

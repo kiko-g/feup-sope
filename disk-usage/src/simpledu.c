@@ -12,14 +12,15 @@ int main(int argc, char *argv[])
         printf("Error Parsing arguments");
         return 1;
     }
-    return recursiveScan(args.path,args.max_depth);
+    return recursiveScan(args.path, args.max_depth);
 }
 
 // ------------------- Directory Scanning -------------------------
 
-int recursiveScan(char *directory_name,int max_depth)
+int recursiveScan(char *directory_name, int max_depth)
 {
-    if(max_depth == 0) return 0;
+    if (max_depth == 0)
+        return 0;
 
     DIR *dir = opendir(directory_name);
     struct dirent *ent;
@@ -40,7 +41,7 @@ int recursiveScan(char *directory_name,int max_depth)
             long file_size = scanFile(file_path);
             current_dir_size += file_size;
 
-            printf("%ld        %s\n", file_size,file_path);
+            printf("%ld        %s\n", file_size, file_path);
 
             free(file_path);
         }
@@ -63,8 +64,8 @@ int recursiveScan(char *directory_name,int max_depth)
                 char *directory_path = (char *)malloc(MAX_CHAR_LEN);
                 sprintf(directory_path, "%s/%s", directory_name, ent->d_name);
 
-                next_dir_size = recursiveScan(directory_path,max_depth-1);
-                printf("%ld        %s\n", next_dir_size,directory_path);
+                next_dir_size = recursiveScan(directory_path, max_depth - 1);
+                printf("%ld        %s\n", next_dir_size, directory_path);
 
                 return next_dir_size;
             }
@@ -94,11 +95,15 @@ int recursiveScan(char *directory_name,int max_depth)
     return current_dir_size;
 }
 
-int scanFile(char *file_path)
+long scanFile(char *file_path)
 {
     struct stat st;
     stat(file_path, &st);
-    return st.st_size;
+
+    if (args.bytes) return st.st_size;
+    else if (args.block_size_flag){
+        return st.st_blocks * 512 / args.block_size;
+    } else return st.st_blocks / 2;
 }
 
 // ------------------- Argument Parsing -------------------------
@@ -225,7 +230,7 @@ bool activateFlag(char *flag, int number)
     }
     else if (!strcmp(ARGUMENTS[index], MAX_DEPTH_FLAG))
     {
-        args.max_depth = number; 
+        args.max_depth = number;
         args.max_depth_flag = true;
         return true;
     }
