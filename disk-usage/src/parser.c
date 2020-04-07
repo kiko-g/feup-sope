@@ -72,41 +72,34 @@ int validFlag(char *flag)
 bool activateFlag(char *flag, int number)
 {
     int index = validFlag(flag);
-    if (index == -1)
-        return false;
-    else if (!strcmp(ARGUMENTS[index], ALL_FLAG_SHORT) || !strcmp(ARGUMENTS[index], ALL_FLAG_LONG))
-    {
+
+    if (index == -1) return false;
+    else if (!strcmp(ARGUMENTS[index], ALL_FLAG_SHORT) || !strcmp(ARGUMENTS[index], ALL_FLAG_LONG)) {
         args.all = true;
         return true;
     }
-    else if (!strcmp(ARGUMENTS[index], BYTES_FLAG_SHORT) || !strcmp(ARGUMENTS[index], BYTES_FLAG_LONG))
-    {
+    else if (!strcmp(ARGUMENTS[index], BYTES_FLAG_SHORT) || !strcmp(ARGUMENTS[index], BYTES_FLAG_LONG)) {
         args.bytes = true;
         return true;
     }
-    else if (!strcmp(ARGUMENTS[index], BLOCKSIZE_FLAG_SHORT) || !strcmp(ARGUMENTS[index], BLOCKSIZE_FLAG_LONG))
-    {
+    else if (!strcmp(ARGUMENTS[index], BLOCKSIZE_FLAG_SHORT) || !strcmp(ARGUMENTS[index], BLOCKSIZE_FLAG_LONG)) {
         args.block_size_flag = true;
         args.block_size = number;
         return true;
     }
-    else if (!strcmp(ARGUMENTS[index], COUNTLINKS_FLAG_SHORT) || !strcmp(ARGUMENTS[index], COUNTLINKS_FLAG_LONG))
-    {
+    else if (!strcmp(ARGUMENTS[index], COUNTLINKS_FLAG_SHORT) || !strcmp(ARGUMENTS[index], COUNTLINKS_FLAG_LONG)) {
         args.countLinks = true;
         return true;
     }
-    else if (!strcmp(ARGUMENTS[index], LINK_FLAG_SHORT) || !strcmp(ARGUMENTS[index], LINK_FLAG_LONG))
-    {
+    else if (!strcmp(ARGUMENTS[index], LINK_FLAG_SHORT) || !strcmp(ARGUMENTS[index], LINK_FLAG_LONG)) {
         args.deference = true;
         return true;
     }
-    else if (!strcmp(ARGUMENTS[index], SEPARATEDIRS_FLAG_SHORT) || !strcmp(ARGUMENTS[index], SEPARATEDIRS_LONG))
-    {
+    else if (!strcmp(ARGUMENTS[index], SEPARATEDIRS_FLAG_SHORT) || !strcmp(ARGUMENTS[index], SEPARATEDIRS_LONG)) {
         args.separateDirs = true;
         return true;
     }
-    else if (!strcmp(ARGUMENTS[index], MAX_DEPTH_FLAG))
-    {
+    else if (!strcmp(ARGUMENTS[index], MAX_DEPTH_FLAG)) {
         args.max_depth = number;
         args.max_depth_flag = true;
         return true;
@@ -114,38 +107,28 @@ bool activateFlag(char *flag, int number)
     return false;
 }
 
-// if path is not valid return -1
-// if file return 0
-// if directory return 1
+
 int isPath(const char *path)
 {
     struct stat path_stat;
-    if (lstat(path, &path_stat) < 0) // Invalid path
-        return -1;
-    else if (isDirectory(path)) // Directory
-        return 1;
-    else if (isFile(path)) // File
-        return 0;
-    else if (isSymbolicLink(path))
-        return 2;
-    else
-        return -1;
+    if (lstat(path, &path_stat) < 0) return -1; // Invalid path
+    else if (isFile(path)) return 0;            // File
+    else if (isDirectory(path)) return 1;       // Directory
+    else if (isSymbolicLink(path)) return 2;    // Symbolic link
+    else return -1;
 }
 
 // ------------------- File Type Checking -------------------------
-
 bool isFile(const char *path)
 {
     struct stat buf;
     int status = stat(path, &buf);
 
-    if (status != 0)
-    {
+    if (status != 0) {
         printf("\nError in stat: %d\n", status);
+        return false;
     }
-
-    if (S_ISREG(buf.st_mode)) // File
-        return true;
+    if (S_ISREG(buf.st_mode)) return true; // File
     return false;
 }
 
@@ -154,13 +137,12 @@ bool isDirectory(const char *path)
     struct stat buf;
     int status = stat(path, &buf);
 
-    if (status != 0)
-    {
+    if (status != 0) {
         printf("\nError in stat: %d\n", status);
+        return false;
     }
 
-    if (S_ISDIR(buf.st_mode)) // Directory
-        return true;
+    if (S_ISDIR(buf.st_mode)) return true; // Directory
     return false;
 }
 
@@ -169,12 +151,11 @@ bool isSymbolicLink(const char *path)
     struct stat buf;
     int status = stat(path, &buf);
 
-    if (status != 0)
-    {
+    if (status != 0) {
         printf("\nError in stat: %d\n", status);
+        return false;
     }
 
-    if (S_ISLNK(buf.st_mode)) // Symbolic Link
-        return true;
+    if (S_ISLNK(buf.st_mode)) return true; // Symbolic Link
     return false;
 }

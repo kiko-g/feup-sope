@@ -3,13 +3,9 @@
 #include <string.h>
 #include <stdbool.h>
 
-
-#define MAX_FLAG_LEN 50
-#define MAX_CHAR_LEN 256
-
 #define READ 0
 #define WRITE 1
-
+#define MAX_LEN 256
 
 /**
  * @brief checks if a path was provided through command line 
@@ -21,6 +17,11 @@
 
 int recursiveScan(char* directory_name, int max_depth);
 
+/** 
+ * @brief
+ * @param file_path path to file
+ * @return 
+ */
 long scanFile(char* file_path);
 
 

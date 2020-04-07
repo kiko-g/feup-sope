@@ -1,11 +1,11 @@
-#include "simpledu.h"
-#include "register.h"
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <dirent.h>
+#include "simpledu.h"
+#include "register.h"
 #include "parser.h"
 #include "signals.h"
 
@@ -16,8 +16,7 @@ int main(int argc, char *argv[])
 {
     // signalHandler();
 
-    if (!parseArguments(argv, argc))
-    {
+    if (!parseArguments(argv, argc)) {
         printf("Error Parsing arguments");
         return 1;
     }
@@ -28,7 +27,7 @@ int main(int argc, char *argv[])
 
 int recursiveScan(char *directory_name, int max_depth)
 {
-    if (max_depth == -1)
+    if (max_depth == -1) 
         return 0;
 
     DIR *dir = opendir(directory_name);
@@ -39,8 +38,7 @@ int recursiveScan(char *directory_name, int max_depth)
     while ((ent = readdir(dir)) != NULL)
     {
         // skip showing current folder and parent folder
-        if (strcmp(ent->d_name, "..") == 0)
-            continue;
+        if (strcmp(ent->d_name, "..") == 0) continue;
         else if(strcmp(ent->d_name, ".") == 0) {
             current_dir_size += scanFile(directory_name);
             continue;
@@ -48,10 +46,11 @@ int recursiveScan(char *directory_name, int max_depth)
 
         // regular file
         if ((ent->d_type == DT_REG || ent->d_type == DT_LNK)) {
-            char *file_path = (char *)malloc(MAX_CHAR_LEN);
+            char *file_path = (char *)malloc(MAX_LEN);
             sprintf(file_path, "%s/%s", directory_name, ent->d_name);
             long file_size = scanFile(file_path);
             current_dir_size += file_size;
+            
 
             if(args.all) {
                 printf("%ld\t%s\n", file_size, file_path);
@@ -93,7 +92,7 @@ int recursiveScan(char *directory_name, int max_depth)
             }
             else { // child process to analyze subdirectory
                 close(filedes[READ]);
-                char *directory_path = (char *)malloc(MAX_CHAR_LEN);
+                char *directory_path = (char *)malloc(MAX_LEN);
                 sprintf(directory_path, "%s/%s", directory_name, ent->d_name);
 
                 int next_dir_size = recursiveScan(directory_path, max_depth - 1);
@@ -107,7 +106,6 @@ int recursiveScan(char *directory_name, int max_depth)
     }
 
     closedir(dir);
-
     printf("%d\t%s\n", current_dir_size, directory_name);
 
     return current_dir_size;
@@ -117,18 +115,13 @@ long scanFile(char *file_path)
 {
     //Checks deference flag
     struct stat st;
-    if (args.deference)
-        stat(file_path, &st);
-    else
-        lstat(file_path, &st);
+    if (args.deference) stat(file_path, &st);
+    else lstat(file_path, &st);
 
     //Checks -B and -b flag
-    if (args.bytes) 
-        return st.st_size;
-    else if (args.block_size_flag)
-        return st.st_blocks * 512 / args.block_size;
-    else
-        return st.st_blocks / 2;
+    if (args.bytes) return st.st_size;
+    else if (args.block_size_flag) return st.st_blocks * 512 / args.block_size;
+    else return st.st_blocks / 2;
 }
 
 

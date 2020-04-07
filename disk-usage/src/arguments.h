@@ -1,5 +1,5 @@
 #include <limits.h>
-
+#define MAX_FLAG_LEN 256
 #define ALL_FLAG_SHORT          "-a"
 #define ALL_FLAG_LONG           "--all"
 #define BYTES_FLAG_SHORT        "-b"
@@ -14,6 +14,8 @@
 #define SEPARATEDIRS_LONG       "--separate-dirs"
 #define MAX_DEPTH_FLAG          "--max-depth"
 
+
+
 #define ARGUMENTS (char*[13]){ALL_FLAG_SHORT, ALL_FLAG_LONG  , BYTES_FLAG_SHORT  , BYTES_FLAG_LONG   , BLOCKSIZE_FLAG_SHORT , BLOCKSIZE_FLAG_LONG , COUNTLINKS_FLAG_SHORT , COUNTLINKS_FLAG_LONG, LINK_FLAG_SHORT , LINK_FLAG_LONG , SEPARATEDIRS_FLAG_SHORT, SEPARATEDIRS_LONG , MAX_DEPTH_FLAG}
 
 struct Arguments {
@@ -26,5 +28,5 @@ struct Arguments {
     bool separateDirs;
     int max_depth;
     bool max_depth_flag;
-    char path[256];
+    char path[MAX_FLAG_LEN];
 };
