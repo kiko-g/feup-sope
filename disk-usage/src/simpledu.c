@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
 
 int recursiveScan(char *directory_name, int max_depth)
 {
-    if (max_depth == 0)
+    if (max_depth == -1)
         return 0;
 
     DIR *dir = opendir(directory_name);
@@ -34,14 +34,16 @@ int recursiveScan(char *directory_name, int max_depth)
             continue;
 
         // regular file
-        if ((ent->d_type == DT_REG || ent->d_type == DT_LNK) && args.all)
+        if ((ent->d_type == DT_REG || ent->d_type == DT_LNK))
         {
             char *file_path = (char *)malloc(MAX_CHAR_LEN);
             sprintf(file_path, "%s/%s", directory_name, ent->d_name);
             long file_size = scanFile(file_path);
             current_dir_size += file_size;
-
-            printf("%ld        %s\n", file_size, file_path);
+            if (args.all)
+            {
+                printf("%ld        %s\n", file_size, file_path);
+            }
 
             free(file_path);
         }
@@ -91,17 +93,21 @@ long scanFile(char *file_path)
 {
     //Checks deference flag
     struct stat st;
-    if(args.deference) stat(file_path, &st);
-    else lstat(file_path, &st);
-    
+    if (args.deference)
+        stat(file_path, &st);
+    else
+        lstat(file_path, &st);
+
     //Checks -B and -b flag
-    if (args.bytes) return st.st_size;
-    else if (args.block_size_flag){
+    if (args.bytes)
+        return st.st_size;
+    else if (args.block_size_flag)
+    {
         return st.st_blocks * 512 / args.block_size;
-    } else return st.st_blocks / 2;
+    }
+    else
+        return st.st_blocks / 2;
 }
-
-
 
 // ------------------- Argument Parsing -------------------------
 
