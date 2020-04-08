@@ -59,7 +59,7 @@ int recursiveScan(char *directory_name, int max_depth)
             
             if(args.all) {
                 printf("%ld\t%s\n", file_size, file_path);
-                registerEntry(file_size,file_path); //Dou aqui o register?
+                registerEntry(file_size,file_path);
             }
 
             free(file_path);
