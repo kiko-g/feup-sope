@@ -67,7 +67,7 @@ void registerRecvSignal(int signal)
     writeRegister(&reg);
 }
 
-void registerSendSignal(int signal)
+void registerSendSignal(pid_t pid,int signal)
 {
     struct Register reg = createRegister(SEND_SIGNAL);
     sprintf(reg.info, "%d", signal);

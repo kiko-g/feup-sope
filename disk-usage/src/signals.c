@@ -4,20 +4,26 @@
 #include <signal.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include "register.h"
 
 extern pid_t child_pid;
 
 void sigint_handler(int signo) {
+    registerRecvSignal(signo);
+    
     if(child_pid) {
+        registerSendSignal(-child_pid,SIGSTOP);
         kill(-child_pid, SIGSTOP);
     }
 
     if (askTerminateProgram()) {
+        registerSendSignal(-child_pid,SIGTERM);
         kill(-child_pid, SIGTERM);
         printf("\n\n Program Terminated");
-        exit(0);
+        registerExit(0);
     }
     else {
+        registerSendSignal(-child_pid,SIGCONT);
         kill(-child_pid, SIGCONT); 
         printf("Continuing Program\n\n ");
     }
