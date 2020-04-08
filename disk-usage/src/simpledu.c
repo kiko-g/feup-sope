@@ -10,10 +10,13 @@
 #include "signals.h"
 
 extern struct Arguments args;
-extern bool received_sigint;
+pid_t original_pgrp_id;
+pid_t child_pid = 0;
 
 int main(int argc, char *argv[])
 {
+    original_pgrp_id = getpgrp();
+
     signalHandler();
 
     if (!parseArguments(argv, argc)) {
@@ -79,6 +82,11 @@ int recursiveScan(char *directory_name, int max_depth)
             else if (pid > 0) { // parent process that waits for childs
                 close(filedes[WRITE]);
 
+                // set child's pid -> used to stop it after ctrl+c
+                if(getpgrp() == original_pgrp_id) {
+                    child_pid = pid;
+                }
+
                 // wait for child processes to finish
                 pid_t wpid;
                 while ((wpid = wait(NULL)) > 0);
@@ -92,6 +100,12 @@ int recursiveScan(char *directory_name, int max_depth)
             }
             else { // child process to analyze subdirectory
                 close(filedes[READ]);
+
+                // create process group for children -> used to stop them after ctrl+c
+                if(getpgrp() == original_pgrp_id) {
+                    setpgid(pid, getpid());
+                }
+
                 char *directory_path = (char *)malloc(MAX_LEN);
                 sprintf(directory_path, "%s/%s", directory_name, ent->d_name);
 
@@ -99,6 +113,8 @@ int recursiveScan(char *directory_name, int max_depth)
                 if(!args.separateDirs) {
                     write(filedes[WRITE], &next_dir_size, sizeof(next_dir_size));
                 }
+
+                free(directory_path);
 
                 exit(0);
             }
