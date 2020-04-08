@@ -1,5 +1,6 @@
 #include <stdbool.h>
 #include <unistd.h>
+#include <fcntl.h>
 #include <sys/types.h>
 
 #define CREATE 0
@@ -9,6 +10,8 @@
 #define RECV_PIPE 4
 #define SEND_PIPE 5
 #define ENTRY 6
+
+#define MAX_REG_LEN 1024
 
 struct Register {
     long instant;

@@ -5,7 +5,7 @@
 #include <string.h>
 #include "register.h"
 
-FILE *registersFile;
+int registersFileDescriptor;
 clock_t initialTime;
 
 bool createRegistersFile()
@@ -13,9 +13,9 @@ bool createRegistersFile()
 
     //Aqui ja e suposto estar definido? ou e suposto definirmos nos?
     setenv("LOG_FILENAME", "registers.txt", 0);
-    registersFile = fopen(getenv("LOG_FILENAME"), "w");
+    registersFileDescriptor = open(getenv("LOG_FILENAME"), O_WRONLY | O_TRUNC | O_CREAT, 0644);
 
-    if (registersFile == NULL)
+    if (registersFileDescriptor < 0)
     {
         printf("Error opening file");
         exit(1);
@@ -41,7 +41,9 @@ struct Register createRegister(int action)
 
 void writeRegister(const struct Register *reg)
 {
-    fprintf(registersFile, "%.2ld - %.8d - %s - %s\n", reg->instant, reg->pid, actionString(reg->action), reg->info);
+    char regString[MAX_REG_LEN];
+    sprintf(regString, "%.2ld - %.8d - %s - %s\n", reg->instant, reg->pid, actionString(reg->action), reg->info);
+    write(registersFileDescriptor, regString, strlen(regString));
 }
 
 void registerCreate(char *argv[], int argc) {
