@@ -64,8 +64,6 @@ int recursiveScan(char *directory_name, int max_depth)
 
         // directory
         else if (ent->d_type == DT_DIR) {
-            // printf("DIRECTORY\n");
-            // printf("Name: %s\n\n", ent->d_name);
             int filedes[2];
 
             if (pipe(filedes) < 0) {

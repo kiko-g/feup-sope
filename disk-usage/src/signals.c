@@ -14,12 +14,12 @@ void sigint_handler(int signo) {
 
     if (askTerminateProgram()) {
         kill(-child_pid, SIGTERM);
-        printf("\n\n Program Terminated");
+        printf("\n\n Program Terminated\n\n");
         exit(0);
     }
     else {
         kill(-child_pid, SIGCONT); 
-        printf("Continuing Program\n\n ");
+        printf("\n\nContinuing Program\n\n ");
     }
     
 }
@@ -49,14 +49,13 @@ void signalHandler() {
     }
 
 /*
-     action.sa_handler = sigstop_handler;
+    action.sa_handler = sigstop_handler;
     action.sa_flags = 0;
     sigemptyset(&action.sa_mask);
     if (sigaction(SIGSTOP, &action, NULL) < 0) {
         fprintf(stderr, "Unable to install SIGSTOP handler\n");
         exit(1);
     } 
-*/
 
     action.sa_handler = sigcont_handler;
     action.sa_flags = 0;
@@ -73,6 +72,7 @@ void signalHandler() {
         fprintf(stderr, "Unable to install SIGTERM handler\n");
         exit(1);
     }  
+*/
 }
 
 bool askTerminateProgram() {
