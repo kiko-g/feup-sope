@@ -38,20 +38,15 @@ void signalHandler()
 
 bool askTerminateProgram()
 {
-    char answer;
+    char answer; 
     printf("Terminate program? (Y/N): ");
 
     while (true)
     {
+        answer = '\0';
         scanf("%c", &answer);
-        if (answer == 'y' || answer == 'Y')
-        {
-            return true;
-        }
-        if ((answer == 'n' || answer == 'N'))
-        {
-            return false;
-        }
+        if (answer == 'y' || answer == 'Y') return true;
+        if (answer == 'n' || answer == 'N') return false;
         printf("\nPlease insert answer again: ");
     }
 }
