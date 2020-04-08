@@ -45,7 +45,7 @@ void writeRegister(const struct Register *reg)
 
 void registerCreate(char *argv[], int argc) {
     struct Register reg =  createRegister(CREATE);
-    for(int i = 1; i < argc; i++){
+    for(int i = 0; i < argc; i++){
 		strcat(reg.info, argv[i]);
         strcat(reg.info," ");
     }

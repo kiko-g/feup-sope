@@ -1,57 +1,57 @@
-1808 - 00008137 - CREATE - --all 
-1946 - 00008137 - ENTRY - 8	./simpledu.o
-1976 - 00008137 - ENTRY - 8	./register.o
-368 - 00008138 - ENTRY - 0	./whatever/symbolic.txt
-414 - 00008138 - ENTRY - 48	./whatever/test.txt
-369 - 00008140 - ENTRY - 4	./whatever/zas1/zas2/zas.txt
-428 - 00008140 - SEND_PIPE - 8
-443 - 00008140 - EXIT - 0
-1808 - 00008137 - CREATE - --all 
-1946 - 00008137 - ENTRY - 8	./simpledu.o
-1976 - 00008137 - ENTRY - 8	./register.o
-368 - 00008138 - ENTRY - 0	./whatever/symbolic.txt
-414 - 00008138 - ENTRY - 48	./whatever/test.txt
-553 - 00008139 - RECV_PIPE - 8
-670 - 00008139 - ENTRY - 4	./whatever/zas1/x.txt
-705 - 00008139 - SEND_PIPE - 16
-721 - 00008139 - EXIT - 0
-1808 - 00008137 - CREATE - --all 
-1946 - 00008137 - ENTRY - 8	./simpledu.o
-1976 - 00008137 - ENTRY - 8	./register.o
-368 - 00008138 - ENTRY - 0	./whatever/symbolic.txt
-414 - 00008138 - ENTRY - 48	./whatever/test.txt
-661 - 00008138 - RECV_PIPE - 16
-737 - 00008138 - SEND_PIPE - 68
-754 - 00008138 - EXIT - 0
-1808 - 00008137 - CREATE - --all 
-1946 - 00008137 - ENTRY - 8	./simpledu.o
-1976 - 00008137 - ENTRY - 8	./register.o
-2270 - 00008137 - RECV_PIPE - 68
-2364 - 00008137 - ENTRY - 4	./register.c
-2401 - 00008137 - ENTRY - 4	./simpledu.h
-2429 - 00008137 - ENTRY - 8	./simpledu.c
-2451 - 00008137 - ENTRY - 4	./parser.h
-356 - 00008141 - ENTRY - 4	./.vscode/c_cpp_properties.json
-399 - 00008141 - SEND_PIPE - 8
-413 - 00008141 - EXIT - 0
-1808 - 00008137 - CREATE - --all 
-1946 - 00008137 - ENTRY - 8	./simpledu.o
-1976 - 00008137 - ENTRY - 8	./register.o
-2270 - 00008137 - RECV_PIPE - 68
-2364 - 00008137 - ENTRY - 4	./register.c
-2401 - 00008137 - ENTRY - 4	./simpledu.h
-2429 - 00008137 - ENTRY - 8	./simpledu.c
-2451 - 00008137 - ENTRY - 4	./parser.h
-2723 - 00008137 - RECV_PIPE - 8
-2786 - 00008137 - ENTRY - 4	./Makefile
-2805 - 00008137 - ENTRY - 8	./signals.o
-2823 - 00008137 - ENTRY - 4	./signals.h
-2840 - 00008137 - ENTRY - 4	./arguments.h
-2862 - 00008137 - ENTRY - 16	./parser.o
-2882 - 00008137 - ENTRY - 28	./simpledu
-2904 - 00008137 - ENTRY - 4	./register.h
-2924 - 00008137 - ENTRY - 4	./main.sh
-2951 - 00008137 - ENTRY - 4	./parser.c
-2972 - 00008137 - ENTRY - 4	./signals.c
-2992 - 00008137 - ENTRY - 4	./simpledu.d
-3013 - 00008137 - ENTRY - 4	./registers.txt
+1816 - 00008382 - CREATE - ./simpledu /home/monchai/Documents/FEUP/SOPE/feup-sope/disk-usage/src --all 
+2051 - 00008382 - ENTRY - 8	/home/monchai/Documents/FEUP/SOPE/feup-sope/disk-usage/src/simpledu.o
+2086 - 00008382 - ENTRY - 8	/home/monchai/Documents/FEUP/SOPE/feup-sope/disk-usage/src/register.o
+357 - 00008383 - ENTRY - 0	/home/monchai/Documents/FEUP/SOPE/feup-sope/disk-usage/src/whatever/symbolic.txt
+400 - 00008383 - ENTRY - 48	/home/monchai/Documents/FEUP/SOPE/feup-sope/disk-usage/src/whatever/test.txt
+419 - 00008385 - ENTRY - 4	/home/monchai/Documents/FEUP/SOPE/feup-sope/disk-usage/src/whatever/zas1/zas2/zas.txt
+487 - 00008385 - SEND_PIPE - 8
+505 - 00008385 - EXIT - 0
+1816 - 00008382 - CREATE - ./simpledu /home/monchai/Documents/FEUP/SOPE/feup-sope/disk-usage/src --all 
+2051 - 00008382 - ENTRY - 8	/home/monchai/Documents/FEUP/SOPE/feup-sope/disk-usage/src/simpledu.o
+2086 - 00008382 - ENTRY - 8	/home/monchai/Documents/FEUP/SOPE/feup-sope/disk-usage/src/register.o
+357 - 00008383 - ENTRY - 0	/home/monchai/Documents/FEUP/SOPE/feup-sope/disk-usage/src/whatever/symbolic.txt
+400 - 00008383 - ENTRY - 48	/home/monchai/Documents/FEUP/SOPE/feup-sope/disk-usage/src/whatever/test.txt
+591 - 00008384 - RECV_PIPE - 8
+709 - 00008384 - ENTRY - 4	/home/monchai/Documents/FEUP/SOPE/feup-sope/disk-usage/src/whatever/zas1/x.txt
+741 - 00008384 - SEND_PIPE - 16
+756 - 00008384 - EXIT - 0
+1816 - 00008382 - CREATE - ./simpledu /home/monchai/Documents/FEUP/SOPE/feup-sope/disk-usage/src --all 
+2051 - 00008382 - ENTRY - 8	/home/monchai/Documents/FEUP/SOPE/feup-sope/disk-usage/src/simpledu.o
+2086 - 00008382 - ENTRY - 8	/home/monchai/Documents/FEUP/SOPE/feup-sope/disk-usage/src/register.o
+357 - 00008383 - ENTRY - 0	/home/monchai/Documents/FEUP/SOPE/feup-sope/disk-usage/src/whatever/symbolic.txt
+400 - 00008383 - ENTRY - 48	/home/monchai/Documents/FEUP/SOPE/feup-sope/disk-usage/src/whatever/test.txt
+637 - 00008383 - RECV_PIPE - 16
+713 - 00008383 - SEND_PIPE - 68
+730 - 00008383 - EXIT - 0
+1816 - 00008382 - CREATE - ./simpledu /home/monchai/Documents/FEUP/SOPE/feup-sope/disk-usage/src --all 
+2051 - 00008382 - ENTRY - 8	/home/monchai/Documents/FEUP/SOPE/feup-sope/disk-usage/src/simpledu.o
+2086 - 00008382 - ENTRY - 8	/home/monchai/Documents/FEUP/SOPE/feup-sope/disk-usage/src/register.o
+2331 - 00008382 - RECV_PIPE - 68
+2411 - 00008382 - ENTRY - 4	/home/monchai/Documents/FEUP/SOPE/feup-sope/disk-usage/src/register.c
+2438 - 00008382 - ENTRY - 4	/home/monchai/Documents/FEUP/SOPE/feup-sope/disk-usage/src/simpledu.h
+2466 - 00008382 - ENTRY - 8	/home/monchai/Documents/FEUP/SOPE/feup-sope/disk-usage/src/simpledu.c
+2488 - 00008382 - ENTRY - 4	/home/monchai/Documents/FEUP/SOPE/feup-sope/disk-usage/src/parser.h
+317 - 00008386 - ENTRY - 4	/home/monchai/Documents/FEUP/SOPE/feup-sope/disk-usage/src/.vscode/c_cpp_properties.json
+353 - 00008386 - SEND_PIPE - 8
+368 - 00008386 - EXIT - 0
+1816 - 00008382 - CREATE - ./simpledu /home/monchai/Documents/FEUP/SOPE/feup-sope/disk-usage/src --all 
+2051 - 00008382 - ENTRY - 8	/home/monchai/Documents/FEUP/SOPE/feup-sope/disk-usage/src/simpledu.o
+2086 - 00008382 - ENTRY - 8	/home/monchai/Documents/FEUP/SOPE/feup-sope/disk-usage/src/register.o
+2331 - 00008382 - RECV_PIPE - 68
+2411 - 00008382 - ENTRY - 4	/home/monchai/Documents/FEUP/SOPE/feup-sope/disk-usage/src/register.c
+2438 - 00008382 - ENTRY - 4	/home/monchai/Documents/FEUP/SOPE/feup-sope/disk-usage/src/simpledu.h
+2466 - 00008382 - ENTRY - 8	/home/monchai/Documents/FEUP/SOPE/feup-sope/disk-usage/src/simpledu.c
+2488 - 00008382 - ENTRY - 4	/home/monchai/Documents/FEUP/SOPE/feup-sope/disk-usage/src/parser.h
+2733 - 00008382 - RECV_PIPE - 8
+2811 - 00008382 - ENTRY - 4	/home/monchai/Documents/FEUP/SOPE/feup-sope/disk-usage/src/Makefile
+2837 - 00008382 - ENTRY - 8	/home/monchai/Documents/FEUP/SOPE/feup-sope/disk-usage/src/signals.o
+2857 - 00008382 - ENTRY - 4	/home/monchai/Documents/FEUP/SOPE/feup-sope/disk-usage/src/signals.h
+2883 - 00008382 - ENTRY - 4	/home/monchai/Documents/FEUP/SOPE/feup-sope/disk-usage/src/arguments.h
+2905 - 00008382 - ENTRY - 16	/home/monchai/Documents/FEUP/SOPE/feup-sope/disk-usage/src/parser.o
+2926 - 00008382 - ENTRY - 28	/home/monchai/Documents/FEUP/SOPE/feup-sope/disk-usage/src/simpledu
+2946 - 00008382 - ENTRY - 4	/home/monchai/Documents/FEUP/SOPE/feup-sope/disk-usage/src/register.h
+2971 - 00008382 - ENTRY - 4	/home/monchai/Documents/FEUP/SOPE/feup-sope/disk-usage/src/main.sh
+3001 - 00008382 - ENTRY - 4	/home/monchai/Documents/FEUP/SOPE/feup-sope/disk-usage/src/parser.c
+3024 - 00008382 - ENTRY - 4	/home/monchai/Documents/FEUP/SOPE/feup-sope/disk-usage/src/signals.c
+3047 - 00008382 - ENTRY - 4	/home/monchai/Documents/FEUP/SOPE/feup-sope/disk-usage/src/simpledu.d
+3070 - 00008382 - ENTRY - 4	/home/monchai/Documents/FEUP/SOPE/feup-sope/disk-usage/src/registers.txt
