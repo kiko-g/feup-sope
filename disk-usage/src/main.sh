@@ -1,2 +1,2 @@
-make clean && make && clear &&  ./simpledu -a  --max-depth=2  whatever && make clean
-# /home/kiko/Pictures
+make clean && make && clear && 
+./simpledu ~/Documents/ --block-size=1 -a -b --max-depth=3

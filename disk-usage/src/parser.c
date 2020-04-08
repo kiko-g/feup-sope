@@ -16,40 +16,54 @@ struct Arguments args = { .max_depth = INT_MAX};
 
 bool parseArguments(char *argv[], int argc)
 {
-
     bool foundPath = false;
     char *flag;
 
     for (int i = 1; i < argc; i++)
     {
+        //remove possible unnecessary slash bar at the end
+        if(argv[i][strlen(argv[i])-1] == '/')
+            argv[i][strlen(argv[i]) - 1] = 0; 
+
         flag = strtok(argv[i], "=");
         int flagIndex = validFlag(flag);
         if (flagIndex != -1)
         {
             int number = -1;
-            if (flagIndex == 12 || flagIndex == 5)
-            { //If it is block-size or max-depth
+
+            if (flagIndex == 5) { // block size
                 number = atoi(strtok(NULL, "="));
+                if(number == 0) {
+                    printf("Invalid block size number argument\n");
+                    exit(-1);
+                }
             }
-            else if (flagIndex == 4)
-            {
+            else if (flagIndex == 4) { // block size short (-B)
                 number = atoi(argv[i + 1]);
+                if(number == 0) {
+                    printf("Invalid block size (-B) number argument\n");
+                    exit(-1);
+                } 
                 i++;
+            }
+            else if (flagIndex == 12) {  // max depth
+                number = atoi(strtok(NULL, "="));
+                if(number == 0) {
+                    printf("Invalid max depth number argument\n");
+                    exit(-1);
+                }
             }
             if (!activateFlag(flag, number))
                 printf("Error na flag %s", flag);
         }
-        else if (isPath(argv[i]) != -1)
-        {
+        else if (isPath(argv[i]) != -1) {
             foundPath = true;
             strcpy(args.path, argv[i]);
         }
-        else
-            return false;
+        else return false;
     }
 
-    if (!foundPath)
-        strcpy(args.path, ".");
+    if (!foundPath) strcpy(args.path, ".");
 
     return true;
 }

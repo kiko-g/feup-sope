@@ -39,7 +39,7 @@ int recursiveScan(char *directory_name, int max_depth)
     DIR *dir = opendir(directory_name);
     struct dirent *ent;
 
-    int current_dir_size = 0;
+    size_t current_dir_size = 0;
 
     while ((ent = readdir(dir)) != NULL)
     {
@@ -58,7 +58,7 @@ int recursiveScan(char *directory_name, int max_depth)
             current_dir_size += file_size;
             
             if(args.all) {
-                printf("%ld\t%s\n", file_size, file_path);
+                printf("%-20ld%s\n", file_size, file_path);
                 registerEntry(file_size,file_path);
             }
 
@@ -127,7 +127,7 @@ int recursiveScan(char *directory_name, int max_depth)
     }
 
     closedir(dir);
-    printf("%d\t%s\n", current_dir_size, directory_name);
+    printf("%-20ld%s\n", current_dir_size, directory_name);
 
     return current_dir_size;
 }
