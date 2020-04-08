@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <signal.h>
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
@@ -12,7 +13,7 @@ bool createRegistersFile()
 
     //Aqui ja e suposto estar definido? ou e suposto definirmos nos?
     setenv("LOG_FILENAME", "registers.txt", 0);
-    registersFile = fopen(getenv("LOG_FILENAME"), "a");
+    registersFile = fopen(getenv("LOG_FILENAME"), "w");
 
     if (registersFile == NULL)
     {
@@ -60,17 +61,17 @@ void registerExit(int exitStatus)
     exit(exitStatus);
 }
 
-void registerRecvSignal(int signal)
+void registerRecSignal(int signal)
 {
     struct Register reg = createRegister(RECV_SIGNAL);
-    sprintf(reg.info, "%d", signal);
+    sprintf(reg.info, "%s", signalString(signal));
     writeRegister(&reg);
 }
 
-void registerSendSignal(pid_t pid,int signal)
+void registerSendSignal(pid_t pid, int signal)
 {
     struct Register reg = createRegister(SEND_SIGNAL);
-    sprintf(reg.info, "%d", signal);
+    sprintf(reg.info, "%s %d", signalString(signal), pid);
     writeRegister(&reg);
 }
 
@@ -96,25 +97,38 @@ void registerEntry(long bytes, char * path)
     writeRegister(&reg);
 }
 
-const char *actionString(int action)
-{
-    switch (action)
-    {
-    case CREATE:
-        return "CREATE";
-    case EXIT:
-        return "EXIT";
-    case RECV_SIGNAL:
-        return "RECV_SIGNAL";
-    case SEND_SIGNAL:
-        return "SEND_SIGNAL";
-    case RECV_PIPE:
-        return "RECV_PIPE";
-    case SEND_PIPE:
-        return "SEND_PIPE";
-    case ENTRY:
-        return "ENTRY";
-    default:
-        return "";
+const char *actionString(int action){
+    switch (action){
+        case CREATE:
+            return "CREATE";
+        case EXIT:
+            return "EXIT";
+        case RECV_SIGNAL:
+            return "RECV_SIGNAL";
+        case SEND_SIGNAL:
+            return "SEND_SIGNAL";
+        case RECV_PIPE:
+            return "RECV_PIPE";
+        case SEND_PIPE:
+            return "SEND_PIPE";
+        case ENTRY:
+            return "ENTRY";
+        default:
+            return "";
+    }
+}
+
+const char *signalString(int signal){
+    switch(signal){
+        case SIGINT:
+            return "SIGINT";
+        case SIGSTOP:
+            return "SIGSTOP";
+        case SIGCONT:
+            return "SIGCONT";
+        case SIGTERM:
+            return "SIGTERM";
+        default:
+            return "";
     }
 }

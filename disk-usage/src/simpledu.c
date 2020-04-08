@@ -113,8 +113,9 @@ int recursiveScan(char *directory_name, int max_depth)
                 sprintf(directory_path, "%s/%s", directory_name, ent->d_name);
 
                 int next_dir_size = recursiveScan(directory_path, max_depth - 1);
-                registerSendPipe(next_dir_size);
+                
                 if(!args.separateDirs) {
+                    registerSendPipe(next_dir_size);
                     write(filedes[WRITE], &next_dir_size, sizeof(next_dir_size));
                 }
 

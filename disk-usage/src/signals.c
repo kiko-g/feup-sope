@@ -9,7 +9,7 @@
 extern pid_t child_pid;
 
 void sigint_handler(int signo) {
-    registerRecvSignal(signo);
+    registerRecSignal(signo);
     
     if(child_pid) {
         registerSendSignal(-child_pid,SIGSTOP);

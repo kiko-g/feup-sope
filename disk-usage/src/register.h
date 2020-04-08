@@ -40,7 +40,15 @@ struct Register createRegister(int action);
  * @param action
  * @return 
  */
-const char * actionString(int action);
+const char* actionString(int action);
+
+/**
+ * @brief 
+ * 
+ * @param signal 
+ * @return const char* 
+ */
+const char* signalString(int signal);
 
 /** 
  * @brief
@@ -62,7 +70,7 @@ void registerCreate(char *argv[], int argc);
  * @param signal
  * @return 
  */
-void registerRecvSignal(int signal);
+void registerRecSignal(int signal);
 
 /** 
  * @brief
