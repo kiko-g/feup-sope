@@ -1,2 +1,57 @@
-aInstant: 1636 PID: 00026764 Action EXIT Info 1
-Instant: 1806 - PID: 00026895 - Action EXIT - Info 1
+1808 - 00008137 - CREATE - --all 
+1946 - 00008137 - ENTRY - 8	./simpledu.o
+1976 - 00008137 - ENTRY - 8	./register.o
+368 - 00008138 - ENTRY - 0	./whatever/symbolic.txt
+414 - 00008138 - ENTRY - 48	./whatever/test.txt
+369 - 00008140 - ENTRY - 4	./whatever/zas1/zas2/zas.txt
+428 - 00008140 - SEND_PIPE - 8
+443 - 00008140 - EXIT - 0
+1808 - 00008137 - CREATE - --all 
+1946 - 00008137 - ENTRY - 8	./simpledu.o
+1976 - 00008137 - ENTRY - 8	./register.o
+368 - 00008138 - ENTRY - 0	./whatever/symbolic.txt
+414 - 00008138 - ENTRY - 48	./whatever/test.txt
+553 - 00008139 - RECV_PIPE - 8
+670 - 00008139 - ENTRY - 4	./whatever/zas1/x.txt
+705 - 00008139 - SEND_PIPE - 16
+721 - 00008139 - EXIT - 0
+1808 - 00008137 - CREATE - --all 
+1946 - 00008137 - ENTRY - 8	./simpledu.o
+1976 - 00008137 - ENTRY - 8	./register.o
+368 - 00008138 - ENTRY - 0	./whatever/symbolic.txt
+414 - 00008138 - ENTRY - 48	./whatever/test.txt
+661 - 00008138 - RECV_PIPE - 16
+737 - 00008138 - SEND_PIPE - 68
+754 - 00008138 - EXIT - 0
+1808 - 00008137 - CREATE - --all 
+1946 - 00008137 - ENTRY - 8	./simpledu.o
+1976 - 00008137 - ENTRY - 8	./register.o
+2270 - 00008137 - RECV_PIPE - 68
+2364 - 00008137 - ENTRY - 4	./register.c
+2401 - 00008137 - ENTRY - 4	./simpledu.h
+2429 - 00008137 - ENTRY - 8	./simpledu.c
+2451 - 00008137 - ENTRY - 4	./parser.h
+356 - 00008141 - ENTRY - 4	./.vscode/c_cpp_properties.json
+399 - 00008141 - SEND_PIPE - 8
+413 - 00008141 - EXIT - 0
+1808 - 00008137 - CREATE - --all 
+1946 - 00008137 - ENTRY - 8	./simpledu.o
+1976 - 00008137 - ENTRY - 8	./register.o
+2270 - 00008137 - RECV_PIPE - 68
+2364 - 00008137 - ENTRY - 4	./register.c
+2401 - 00008137 - ENTRY - 4	./simpledu.h
+2429 - 00008137 - ENTRY - 8	./simpledu.c
+2451 - 00008137 - ENTRY - 4	./parser.h
+2723 - 00008137 - RECV_PIPE - 8
+2786 - 00008137 - ENTRY - 4	./Makefile
+2805 - 00008137 - ENTRY - 8	./signals.o
+2823 - 00008137 - ENTRY - 4	./signals.h
+2840 - 00008137 - ENTRY - 4	./arguments.h
+2862 - 00008137 - ENTRY - 16	./parser.o
+2882 - 00008137 - ENTRY - 28	./simpledu
+2904 - 00008137 - ENTRY - 4	./register.h
+2924 - 00008137 - ENTRY - 4	./main.sh
+2951 - 00008137 - ENTRY - 4	./parser.c
+2972 - 00008137 - ENTRY - 4	./signals.c
+2992 - 00008137 - ENTRY - 4	./simpledu.d
+3013 - 00008137 - ENTRY - 4	./registers.txt

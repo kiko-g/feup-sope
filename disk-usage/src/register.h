@@ -75,17 +75,17 @@ void registerSendvSignal(int signal);
  * @param message 
  * @return 
  */
-void registerRecPipe(char *message);
+void registerRecPipe(int size);
 
 /** 
  * @brief
  * @param message 
  * @return 
  */
-void registerSendPipe(char *message);
+void registerSendPipe(int size);
 
 /** 
  * @brief
  * @param bytes
  */
-void registerEntry(int bytes);
+void registerEntry(long bytes,char * path);
