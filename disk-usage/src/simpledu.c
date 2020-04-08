@@ -17,11 +17,14 @@ int main(int argc, char *argv[])
 {
     original_pgrp_id = getpgrp();
 
+    createRegistersFile();
+    registerCreate(argv,argc);
+
     signalHandler();
 
     if (!parseArguments(argv, argc)) {
         printf("Error Parsing arguments");
-        return 1;
+        registerExit(1);
     }
     return recursiveScan(args.path, args.max_depth);
 }
@@ -54,9 +57,9 @@ int recursiveScan(char *directory_name, int max_depth)
             long file_size = scanFile(file_path);
             current_dir_size += file_size;
             
-
             if(args.all) {
                 printf("%ld\t%s\n", file_size, file_path);
+                registerEntry(file_size,file_path); //Dou aqui o register?
             }
 
             free(file_path);
@@ -68,14 +71,14 @@ int recursiveScan(char *directory_name, int max_depth)
 
             if (pipe(filedes) < 0) {
                 perror("Error in pipe creation\n");
-                exit(-1);
+                registerExit(-1);
             }
 
             pid_t pid = fork();
 
             if (pid < 0) {
                 perror("Error in fork\n");
-                exit(-1);
+                registerExit(-1);
             }
             else if (pid > 0) { // parent process that waits for childs
                 close(filedes[WRITE]);
@@ -92,11 +95,13 @@ int recursiveScan(char *directory_name, int max_depth)
                 if(!args.separateDirs) {
                     int next_dir_size;
                     read(filedes[READ], &next_dir_size, sizeof(int));
+                    registerRecPipe(next_dir_size);
                     current_dir_size += next_dir_size;
                 }
 
             }
             else { // child process to analyze subdirectory
+            
                 close(filedes[READ]);
 
                 // create process group for children -> used to stop them after ctrl+c
@@ -108,13 +113,14 @@ int recursiveScan(char *directory_name, int max_depth)
                 sprintf(directory_path, "%s/%s", directory_name, ent->d_name);
 
                 int next_dir_size = recursiveScan(directory_path, max_depth - 1);
+                registerSendPipe(next_dir_size);
                 if(!args.separateDirs) {
                     write(filedes[WRITE], &next_dir_size, sizeof(next_dir_size));
                 }
 
                 free(directory_path);
 
-                exit(0);
+                registerExit(0);
             }
         }
     }

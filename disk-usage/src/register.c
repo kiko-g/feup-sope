@@ -17,6 +17,7 @@ bool createRegistersFile()
     if (registersFile == NULL)
     {
         printf("Error opening file");
+        exit(1);
         return false;
     }
     return true;
@@ -31,7 +32,7 @@ struct Register createRegister(int action)
 {
     struct Register reg;
     reg.action = action;
-    reg.instant = clock();
+    reg.instant = clock() - initialTime;
     //reg.info = O que deveria sero info?
     reg.pid = getpid();
     return reg;
@@ -44,11 +45,10 @@ void writeRegister(const struct Register *reg)
 
 void registerCreate(char *argv[], int argc) {
     struct Register reg =  createRegister(CREATE);
-    for(int i = 1; i < argc; i++){
+    for(int i = 0; i < argc; i++){
 		strcat(reg.info, argv[i]);
         strcat(reg.info," ");
     }
-    
     writeRegister(&reg);
 }
 
@@ -57,6 +57,7 @@ void registerExit(int exitStatus)
     struct Register reg = createRegister(EXIT);
     sprintf(reg.info, "%d", exitStatus);
     writeRegister(&reg);
+    exit(exitStatus);
 }
 
 void registerRecvSignal(int signal)
@@ -66,32 +67,32 @@ void registerRecvSignal(int signal)
     writeRegister(&reg);
 }
 
-void registerSendSignal(int signal)
+void registerSendSignal(pid_t pid,int signal)
 {
     struct Register reg = createRegister(SEND_SIGNAL);
     sprintf(reg.info, "%d", signal);
     writeRegister(&reg);
 }
 
-void registerRecPipe(char *message)
+void registerRecPipe(int size)
 {
     struct Register reg = createRegister(RECV_PIPE);
-    strcpy(reg.info, message);
+    sprintf(reg.info, "%d",size);
     writeRegister(&reg);
 }
 
-void registerSendPipe(char *message)
+void registerSendPipe(int size)
 {
     struct Register reg = createRegister(SEND_PIPE);
-    strcpy(reg.info, message);
+    sprintf(reg.info, "%d",size);
     writeRegister(&reg);
 }
 
-void registerEntry(int bytes)
+void registerEntry(long bytes, char * path)
 {
     // número de bytes (ou blocos) seguido do caminho.
     struct Register reg = createRegister(ENTRY);
-    sprintf(reg.info, "%d", bytes);
+    sprintf(reg.info, "%ld\t%s", bytes,path);
     writeRegister(&reg);
 }
 

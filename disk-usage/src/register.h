@@ -1,5 +1,6 @@
 #include <stdbool.h>
 #include <unistd.h>
+#include <sys/types.h>
 
 #define CREATE 0
 #define EXIT 1
@@ -66,26 +67,27 @@ void registerRecvSignal(int signal);
 /** 
  * @brief
  * @param signal
+ * @param pid
  * @return 
  */
-void registerSendvSignal(int signal);
+void registerSendSignal(pid_t pid,int signal);
 
 /** 
  * @brief
  * @param message 
  * @return 
  */
-void registerRecPipe(char *message);
+void registerRecPipe(int size);
 
 /** 
  * @brief
  * @param message 
  * @return 
  */
-void registerSendPipe(char *message);
+void registerSendPipe(int size);
 
 /** 
  * @brief
  * @param bytes
  */
-void registerEntry(int bytes);
+void registerEntry(long bytes,char * path);
