@@ -60,9 +60,7 @@ int recursiveScan(char *directory_name, int max_depth)
             current_dir_size += file_size;
             
             if(args.all) {
-                char entryString[MAX_REG_LEN];
-                sprintf(entryString, "%ld\t%s\n",file_size, path);
-                write(STDOUT_FILENO, entryString, strlen(entryString));
+                printElement(file_size,path);
                 registerEntry(file_size,path);
             }
 
@@ -133,10 +131,7 @@ int recursiveScan(char *directory_name, int max_depth)
     }
 
     closedir(dir);
-    char entryString[MAX_REG_LEN];
-    sprintf(entryString, "%ld\t%s\n", current_dir_size, directory_name);
-    write(STDOUT_FILENO, entryString, strlen(entryString));
-
+    printElement(current_dir_size,directory_name);
     return current_dir_size;
 }
 
@@ -151,6 +146,13 @@ long scanFile(char *file_path)
     if (args.bytes) return st.st_size;
     else if (args.block_size_flag) return st.st_blocks * 512 / args.block_size;
     else return st.st_blocks / 2;
+}
+
+void printElement(long size, char * path){
+   
+    char entryString[MAX_REG_LEN];
+    sprintf(entryString, "%ld\t%s\n",size, path);
+    write(STDOUT_FILENO, entryString, strlen(entryString));
 }
 
 

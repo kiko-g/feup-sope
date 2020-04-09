@@ -24,5 +24,13 @@ int recursiveScan(char* directory_name, int max_depth);
  */
 long scanFile(char* file_path);
 
+/**
+ * @brief prints directory/file given
+ * @param path path to file
+ * @param size size of the file
+ * @return 
+ */
+void printElement(long size, char * path);
+
 
 

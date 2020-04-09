@@ -1,5 +1,3 @@
-150245	.
-4538	./.vscode
-60278	./whatever
-8201	./whatever/zas1
-4101	./whatever/zas1/zas2
+52077	whatever
+8	whatever/symbolic.txt
+47973	whatever/test.txt
