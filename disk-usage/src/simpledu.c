@@ -20,8 +20,7 @@ int main(int argc, char *argv[])
     createRegistersFile();
     registerCreate(argv,argc);
 
-    //install_sigactions();
-    install_sighandlers();
+    install_sigactions();
 
     if (!parseArguments(argv, argc)) {
         printf("Error Parsing arguments");

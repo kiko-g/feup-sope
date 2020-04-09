@@ -42,15 +42,11 @@ void sigterm_handler(int signo) {
     exit(0);
 }
 
-void install_sighandlers() {
-    signal(SIGINT, sigint_handler);
-}
-
 void install_sigactions() {
     struct sigaction action;
     action.sa_handler = sigint_handler;
     sigemptyset(&action.sa_mask);
-    action.sa_flags = 0;
+    action.sa_flags = SA_RESTART;
     if (sigaction(SIGINT, &action, NULL) < 0) {
         fprintf(stderr, "Unable to install SIGINT handler\n");
         exit(1);

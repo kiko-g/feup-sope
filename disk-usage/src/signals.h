@@ -1,7 +1,5 @@
 #include <stdbool.h>
 
-void install_sighandlers();
-
 void install_sigactions(); 
 
 void sigint_handler(int signo);
