@@ -39,38 +39,47 @@ int recursiveScan(char *directory_name, int max_depth)
 
     DIR *dir = opendir(directory_name);
     struct dirent *ent;
+    struct stat stbuf;
 
     size_t current_dir_size = 0;
 
     while ((ent = readdir(dir)) != NULL)
     {
+        
         // skip showing current folder and parent folder
         if (strcmp(ent->d_name, "..") == 0) continue;
-        else if(strcmp(ent->d_name, ".") == 0) {
-            current_dir_size += scanFile(directory_name);
+
+        // build new path and populate stat buffer
+        char *entity_path = (char *)malloc(MAX_LEN);
+        sprintf(entity_path, "%s/%s", directory_name, ent->d_name);   
+        if (args.deference)
+            stat(entity_path, &stbuf);
+        else
+            lstat(entity_path, &stbuf);
+
+        // current directory file size
+        if(strcmp(ent->d_name, ".") == 0) {
+            current_dir_size += scanEntity(stbuf);
+            free(entity_path);
             continue;
         }
-        char *path = (char *)malloc(MAX_LEN);
-        sprintf(path, "%s/%s", directory_name, ent->d_name);
 
         // regular file
-        if ((isFile(path) || isSymbolicLink(path))) {
+        if (S_ISREG(stbuf.st_mode) || S_ISLNK(stbuf.st_mode)) {
             
-            long file_size = scanFile(path);
+            long file_size = scanEntity(stbuf);
             current_dir_size += file_size;
             
             if(args.all) {
                 char entryString[MAX_REG_LEN];
-                sprintf(entryString, "%ld\t%s\n",file_size, path);
+                sprintf(entryString, "%ld\t%s\n", file_size, entity_path);
                 write(STDOUT_FILENO, entryString, strlen(entryString));
-                registerEntry(file_size,path);
+                registerEntry(file_size, entity_path);
             }
-
-            free(path);
         }
 
-        // directory
-        else if (isDirectory(path)) {
+        // sub-directory
+        else if (S_ISDIR(stbuf.st_mode)) {
             int filedes[2];
 
             if (pipe(filedes) < 0) {
@@ -82,6 +91,7 @@ int recursiveScan(char *directory_name, int max_depth)
 
             if (pid < 0) {
                 perror("Error in fork\n");
+                free(entity_path);
                 registerExit(-1);
             }
             else if (pid > 0) { // parent process that waits for childs
@@ -105,8 +115,7 @@ int recursiveScan(char *directory_name, int max_depth)
 
                 close(filedes[READ]);
             }
-            else { // child process to analyze subdirectory
-            
+            else { // child process to analyze subdirectory       
                 close(filedes[READ]);
 
                 // create process group for children -> used to stop them after ctrl+c
@@ -114,10 +123,7 @@ int recursiveScan(char *directory_name, int max_depth)
                     setpgid(pid, getpid());
                 }
 
-                char *directory_path = (char *)malloc(MAX_LEN);
-                sprintf(directory_path, "%s/%s", directory_name, ent->d_name);
-
-                int next_dir_size = recursiveScan(directory_path, max_depth - 1);
+                int next_dir_size = recursiveScan(entity_path, max_depth - 1);
                 
                 if(!args.separateDirs) {
                     registerSendPipe(next_dir_size);
@@ -125,13 +131,15 @@ int recursiveScan(char *directory_name, int max_depth)
                 }
 
                 close(filedes[WRITE]);
-                free(directory_path);
 
+                free(entity_path);
                 registerExit(0);
             }
         }
-    }
 
+        free(entity_path);
+    }
+    
     closedir(dir);
     char entryString[MAX_REG_LEN];
     sprintf(entryString, "%ld\t%s\n", current_dir_size, directory_name);
@@ -140,17 +148,16 @@ int recursiveScan(char *directory_name, int max_depth)
     return current_dir_size;
 }
 
-long scanFile(char *file_path)
-{
-    //Checks deference flag
-    struct stat st;
-    if (args.deference) stat(file_path, &st);
-    else lstat(file_path, &st);
 
+long scanEntity(struct stat stbuf)
+{
     //Checks -B and -b flag
-    if (args.bytes) return st.st_size;
-    else if (args.block_size_flag) return st.st_blocks * 512 / args.block_size;
-    else return st.st_blocks / 2;
+    if (args.bytes) 
+        return stbuf.st_size;
+    else if (args.block_size_flag) 
+        return stbuf.st_blocks * 512 / args.block_size;
+    else 
+        return stbuf.st_blocks / 2;
 }
 
 

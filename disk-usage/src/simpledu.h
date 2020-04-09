@@ -22,7 +22,7 @@ int recursiveScan(char* directory_name, int max_depth);
  * @param file_path path to file
  * @return 
  */
-long scanFile(char* file_path);
+long scanEntity(struct stat stbuf);
 
 
 

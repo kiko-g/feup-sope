@@ -128,52 +128,11 @@ bool activateFlag(char *flag, int number)
 
 int isPath(const char *path)
 {
-    struct stat path_stat;
-    if (lstat(path, &path_stat) < 0) return -1; // Invalid path
-    else if (isFile(path)) return 0;            // File
-    else if (isDirectory(path)) return 1;       // Directory
-    else if (isSymbolicLink(path)) return 2;    // Symbolic link
+    struct stat stbuf;
+    if(stat(path, &stbuf) < 0) return -1;       // Invalid path
+    else if(S_ISREG(stbuf.st_mode)) return 0;   // File
+    else if(S_ISDIR(stbuf.st_mode)) return 1;   // Directory
+    else if(S_ISLNK(stbuf.st_mode)) return 2;   // Symbolic link
     else return -1;
 }
 
-// ------------------- File Type Checking -------------------------
-bool isFile(const char *path)
-{
-    struct stat buf;
-    int status = stat(path, &buf);
-
-    if (status != 0) {
-        printf("\nError in stat: %d\n", status);
-        return false;
-    }
-    if (S_ISREG(buf.st_mode)) return true; // File
-    return false;
-}
-
-bool isDirectory(const char *path)
-{
-    struct stat buf;
-    int status = stat(path, &buf);
-
-    if (status != 0) {
-        printf("\nError in stat: %d\n", status);
-        return false;
-    }
-
-    if (S_ISDIR(buf.st_mode)) return true; // Directory
-    return false;
-}
-
-bool isSymbolicLink(const char *path)
-{
-    struct stat buf;
-    int status = stat(path, &buf);
-
-    if (status != 0) {
-        printf("\nError in stat: %d\n", status);
-        return false;
-    }
-
-    if (S_ISLNK(buf.st_mode)) return true; // Symbolic Link
-    return false;
-}
