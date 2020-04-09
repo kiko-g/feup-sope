@@ -9,6 +9,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include "parser.h"
+#include "register.h"
 
 // ------------------- Argument Parsing ------------------------- //
 
@@ -32,26 +33,29 @@ bool parseArguments(char *argv[], int argc)
             int number = -1;
 
             if (flagIndex == 5) { // block size
-                number = atoi(strtok(NULL, "="));
-                if(number == 0) {
+                char * numberChar = strtok(NULL, "=");
+                if(numberChar == NULL) {
                     printf("Invalid block size number argument\n");
-                    exit(-1);
+                    registerExit(-1);
                 }
+                number = atoi(numberChar);
+
             }
             else if (flagIndex == 4) { // block size short (-B)
-                number = atoi(argv[i + 1]);
-                if(number == 0) {
+                if(argv[i + 1] == NULL) {
                     printf("Invalid block size (-B) number argument\n");
-                    exit(-1);
+                    registerExit(-1);
                 } 
+                number = atoi(argv[i + 1]);
                 i++;
             }
             else if (flagIndex == 12) {  // max depth
-                number = atoi(strtok(NULL, "="));
-                if(number == 0) {
+                char * numberChar = strtok(NULL, "=");
+                if(numberChar == NULL) {
                     printf("Invalid max depth number argument\n");
-                    exit(-1);
+                    registerExit(-1);
                 }
+                number = atoi(numberChar);
             }
             if (!activateFlag(flag, number))
                 printf("Error na flag %s", flag);

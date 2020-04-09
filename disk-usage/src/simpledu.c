@@ -49,24 +49,25 @@ int recursiveScan(char *directory_name, int max_depth)
             current_dir_size += scanFile(directory_name);
             continue;
         }
+        char *path = (char *)malloc(MAX_LEN);
+        sprintf(path, "%s/%s", directory_name, ent->d_name);
 
         // regular file
-        if ((ent->d_type == DT_REG || ent->d_type == DT_LNK)) {
-            char *file_path = (char *)malloc(MAX_LEN);
-            sprintf(file_path, "%s/%s", directory_name, ent->d_name);
-            long file_size = scanFile(file_path);
+        if ((isFile(path) || isSymbolicLink(path))) {
+            
+            long file_size = scanFile(path);
             current_dir_size += file_size;
             
             if(args.all) {
-                printf("%-20ld%s\n", file_size, file_path);
-                registerEntry(file_size,file_path);
+                printf("%-20ld%s\n", file_size, path);
+                registerEntry(file_size,path);
             }
 
-            free(file_path);
+            free(path);
         }
 
         // directory
-        else if (ent->d_type == DT_DIR) {
+        else if (isDirectory(path)) {
             int filedes[2];
 
             if (pipe(filedes) < 0) {
