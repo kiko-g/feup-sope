@@ -26,7 +26,8 @@ int main(int argc, char *argv[])
         printf("Error Parsing arguments");
         registerExit(1);
     }
-    return recursiveScan(args.path, args.max_depth);
+    recursiveScan(args.path, args.max_depth);
+    registerExit(0);
 }
 
 // ------------------- Directory Scanning -------------------------
@@ -59,7 +60,9 @@ int recursiveScan(char *directory_name, int max_depth)
             current_dir_size += file_size;
             
             if(args.all) {
-                printf("%-20ld%s\n", file_size, path);
+                char entryString[MAX_REG_LEN];
+                sprintf(entryString, "%ld\t%s\n",file_size, path);
+                write(STDOUT_FILENO, entryString, strlen(entryString));
                 registerEntry(file_size,path);
             }
 
@@ -130,7 +133,9 @@ int recursiveScan(char *directory_name, int max_depth)
     }
 
     closedir(dir);
-    printf("%-20ld%s\n", current_dir_size, directory_name);
+    char entryString[MAX_REG_LEN];
+    sprintf(entryString, "%ld\t%s\n", current_dir_size, directory_name);
+    write(STDOUT_FILENO, entryString, strlen(entryString));
 
     return current_dir_size;
 }
