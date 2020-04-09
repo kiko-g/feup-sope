@@ -59,7 +59,7 @@ int recursiveScan(char *directory_name, int max_depth)
             long file_size = scanFile(path);
             current_dir_size += file_size;
             
-            if(args.all) {
+            if(args.all && max_depth >0) {
                 printElement(file_size,path);
                 registerEntry(file_size,path);
             }

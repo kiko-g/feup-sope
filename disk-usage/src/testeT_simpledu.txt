@@ -1,3 +1,7 @@
-52077	whatever
-8	whatever/symbolic.txt
-47973	whatever/test.txt
+118784	whatever
+49152	whatever/symbolic.txt
+49152	whatever/test.txt
+16384	whatever/zas1
+4096	whatever/zas1/x.txt
+8192	whatever/zas1/zas2
+4096	whatever/zas1/zas2/zas.txt

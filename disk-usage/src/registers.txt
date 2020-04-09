@@ -1,5 +1,12 @@
-1479 - 00005602 - CREATE - ./simpledu -a -l -b -S --max-depth=0 whatever 
-1543 - 00005602 - ENTRY - 8	whatever/symbolic.txt
-1566 - 00005602 - ENTRY - 47973	whatever/test.txt
-184 - 00005603 - EXIT - 0
-1730 - 00005602 - EXIT - 0
+1370 - 00007046 - CREATE - ./simpledu -a -l -B 1 -L whatever 
+1510 - 00007046 - ENTRY - 49152	whatever/symbolic.txt
+1542 - 00007046 - ENTRY - 49152	whatever/test.txt
+389 - 00007048 - ENTRY - 4096	whatever/zas1/zas2/zas.txt
+488 - 00007048 - SEND_PIPE - 8192
+528 - 00007048 - EXIT - 0
+510 - 00007047 - RECV_PIPE - 8192
+632 - 00007047 - ENTRY - 4096	whatever/zas1/x.txt
+677 - 00007047 - SEND_PIPE - 16384
+701 - 00007047 - EXIT - 0
+1792 - 00007046 - RECV_PIPE - 16384
+1886 - 00007046 - EXIT - 0
