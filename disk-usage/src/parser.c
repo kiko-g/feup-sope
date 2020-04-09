@@ -23,47 +23,69 @@ bool parseArguments(char *argv[], int argc)
     for (int i = 1; i < argc; i++)
     {
         //remove possible unnecessary slash bar at the end
-        if(argv[i][strlen(argv[i])-1] == '/')
-            argv[i][strlen(argv[i]) - 1] = 0; 
+        if(argv[i][strlen(argv[i])-1] == '/') argv[i][strlen(argv[i]) - 1] = 0; 
 
         flag = strtok(argv[i], "=");
         int flagIndex = validFlag(flag);
+
         if (flagIndex != -1)
         {
             int number = -1;
 
-            if (flagIndex == 5) { // block size
+            if (flagIndex == 5) // block size
+            { 
                 char * numberChar = strtok(NULL, "=");
                 if(numberChar == NULL) {
-                    printf("Invalid block size number argument\n");
+                    printf("Invalid block size number argument (not provided)\n");
                     registerExit(-1);
                 }
-                number = atoi(numberChar);
-
+                else if (atoi(numberChar)) number = atoi(numberChar);
+                else {
+                    printf("Invalid block size (-B) number argument ('%s')\n", argv[i + 1]);
+                    registerExit(-1);
+                }
             }
-            else if (flagIndex == 4) { // block size short (-B)
+
+            
+            else if (flagIndex == 4) // block size short (-B) 
+            {
                 if(argv[i + 1] == NULL) {
                     printf("Invalid block size (-B) number argument\n");
                     registerExit(-1);
-                } 
-                number = atoi(argv[i + 1]);
-                i++;
-            }
-            else if (flagIndex == 12) {  // max depth
-                char * numberChar = strtok(NULL, "=");
-                if(numberChar == NULL) {
-                    printf("Invalid max depth number argument\n");
+                }
+                else if (atoi(argv[i+1])) {
+                    number = atoi(argv[i+1]);
+                }
+                else {
+                    printf("Invalid block size (-B) number argument ('%s')\n", argv[i + 1]);
                     registerExit(-1);
                 }
-                number = atoi(numberChar);
+
+                i++;
             }
-            if (!activateFlag(flag, number))
-                printf("Error na flag %s", flag);
+            else if (flagIndex == 12) // max depth
+            { 
+                char * numberChar = strtok(NULL, "=");
+                if(numberChar == NULL) {
+                    printf("Invalid max depth number argument (not provided)\n");
+                    registerExit(-1);
+                }
+                else if (numberChar[0] == '0' && strlen(numberChar) == 1) number = 0;
+                else if (atoi(numberChar)) number = atoi(numberChar);
+                else {
+                    printf("Invalid max depth number argument ('%s')\n", numberChar);
+                    registerExit(-1);
+                }
+            }
+
+            if (!activateFlag(flag, number)) printf("Error in flag %s", flag);
         }
+
         else if (isPath(argv[i]) != -1) {
             foundPath = true;
             strcpy(args.path, argv[i]);
         }
+
         else return false;
     }
 

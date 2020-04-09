@@ -45,7 +45,6 @@ int recursiveScan(char *directory_name, int max_depth)
 
     while ((ent = readdir(dir)) != NULL)
     {
-        
         // skip showing current folder and parent folder
         if (strcmp(ent->d_name, "..") == 0) continue;
 
@@ -70,10 +69,8 @@ int recursiveScan(char *directory_name, int max_depth)
             long file_size = scanEntity(stbuf);
             current_dir_size += file_size;
             
-            if(args.all) {
-                char entryString[MAX_REG_LEN];
-                sprintf(entryString, "%ld\t%s\n", file_size, entity_path);
-                write(STDOUT_FILENO, entryString, strlen(entryString));
+            if(args.all && max_depth >0) {
+                printEntity(file_size, entity_path);
                 registerEntry(file_size, entity_path);
             }
         }
@@ -84,6 +81,7 @@ int recursiveScan(char *directory_name, int max_depth)
 
             if (pipe(filedes) < 0) {
                 perror("Error in pipe creation\n");
+                free(entity_path);
                 registerExit(-1);
             }
 
@@ -141,10 +139,7 @@ int recursiveScan(char *directory_name, int max_depth)
     }
     
     closedir(dir);
-    char entryString[MAX_REG_LEN];
-    sprintf(entryString, "%ld\t%s\n", current_dir_size, directory_name);
-    write(STDOUT_FILENO, entryString, strlen(entryString));
-
+    printEntity(current_dir_size, directory_name);
     return current_dir_size;
 }
 
@@ -158,6 +153,13 @@ long scanEntity(struct stat stbuf)
         return stbuf.st_blocks * 512 / args.block_size;
     else 
         return stbuf.st_blocks / 2;
+}
+
+void printEntity(long size, char* path)
+{
+    char entryString[MAX_REG_LEN];
+    sprintf(entryString, "%ld\t%s\n",size, path);
+    write(STDOUT_FILENO, entryString, strlen(entryString));
 }
 
 

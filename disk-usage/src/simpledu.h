@@ -24,5 +24,13 @@ int recursiveScan(char* directory_name, int max_depth);
  */
 long scanEntity(struct stat stbuf);
 
+/**
+ * @brief prints directory/file given
+ * @param path path to file
+ * @param size size of the file
+ * @return 
+ */
+void printEntity(long size, char* path);
+
 
 
