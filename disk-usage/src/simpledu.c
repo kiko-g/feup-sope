@@ -20,7 +20,8 @@ int main(int argc, char *argv[])
     createRegistersFile();
     registerCreate(argv,argc);
 
-    signalHandler();
+    //install_sigactions();
+    install_sighandlers();
 
     if (!parseArguments(argv, argc)) {
         printf("Error Parsing arguments");
@@ -99,6 +100,7 @@ int recursiveScan(char *directory_name, int max_depth)
                     current_dir_size += next_dir_size;
                 }
 
+                close(filedes[READ]);
             }
             else { // child process to analyze subdirectory
             
@@ -119,6 +121,7 @@ int recursiveScan(char *directory_name, int max_depth)
                     write(filedes[WRITE], &next_dir_size, sizeof(next_dir_size));
                 }
 
+                close(filedes[WRITE]);
                 free(directory_path);
 
                 registerExit(0);

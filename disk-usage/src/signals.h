@@ -1,6 +1,8 @@
 #include <stdbool.h>
 
-void signalHandler(); 
+void install_sighandlers();
+
+void install_sigactions(); 
 
 void sigint_handler(int signo);
 
