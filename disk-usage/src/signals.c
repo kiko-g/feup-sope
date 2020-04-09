@@ -19,13 +19,11 @@ void sigint_handler(int signo) {
     if (askTerminateProgram()) {
         registerSendSignal(-child_pid,SIGTERM);
         kill(-child_pid, SIGTERM);
-        printf("\n\nProgram Terminated\n\n");
         registerExit(0);
     }
     else {
         registerSendSignal(-child_pid,SIGCONT);
-        kill(-child_pid, SIGCONT); 
-        printf("\n\nContinuing Program\n\n ");
+        kill(-child_pid, SIGCONT);
     }
     
 }
@@ -44,7 +42,11 @@ void sigterm_handler(int signo) {
     exit(0);
 }
 
-void signalHandler() {
+void install_sighandlers() {
+    signal(SIGINT, sigint_handler);
+}
+
+void install_sigactions() {
     struct sigaction action;
     action.sa_handler = sigint_handler;
     sigemptyset(&action.sa_mask);
@@ -82,13 +84,20 @@ void signalHandler() {
 }
 
 bool askTerminateProgram() {
-    char answer; 
-    write(STDOUT_FILENO, "\n\nTerminate program? (Y/N): ", 28);
+    char answer[1];
+    if(write(STDOUT_FILENO, "\n\nTerminate program? (Y/N): ", 28) == -1) {
+        perror("WRITE IN SIGINT HANDLER");
+        exit(-1);
+    }
+    fflush(stdout);
 
     while (true) {
-        answer = '\0';
-        scanf("%c", &answer);
-        if (answer == 'y' || answer == 'Y') return true;
-        if (answer == 'n' || answer == 'N') return false;
+        if(read(STDIN_FILENO, answer, 1) == -1) {
+            perror("READ IN SIGINT HANDLER");
+            exit(-1);
+        }
+        //answer = getchar();
+        if (answer[0] == 'y' || answer[0] == 'Y') return true;
+        if (answer[0] == 'n' || answer[0] == 'N') return false;
     }
 }
