@@ -61,7 +61,7 @@ int recursiveScan(char *directory_name, int max_depth)
             
             if(args.all) {
                 char entryString[MAX_REG_LEN];
-                sprintf(entryString, "%ld\t%s\n",file_size, path);
+                sprintf(entryString, "%-12ld\t%s\n",file_size, path);
                 write(STDOUT_FILENO, entryString, strlen(entryString));
                 registerEntry(file_size,path);
             }
@@ -134,7 +134,7 @@ int recursiveScan(char *directory_name, int max_depth)
 
     closedir(dir);
     char entryString[MAX_REG_LEN];
-    sprintf(entryString, "%ld\t%s\n", current_dir_size, directory_name);
+    sprintf(entryString, "%-12ld\t%s\n", current_dir_size, directory_name);
     write(STDOUT_FILENO, entryString, strlen(entryString));
 
     return current_dir_size;

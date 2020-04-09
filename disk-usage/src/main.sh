@@ -1,2 +1,2 @@
 make clean && make && clear && 
-./simpledu ~/Documents/ --block-size=1 -a -b --max-depth=3
+./simpledu /mnt/1AAE98A8AE987DC7/ -a -b
