@@ -10,15 +10,17 @@ clock_t initialTime;
 
 bool createRegistersFile()
 {
-
-    //Aqui ja e suposto estar definido? ou e suposto definirmos nos?
-    setenv("LOG_FILENAME", "registers.txt", 0);
+    char * logFilename = getenv("LOG_FILENAME");
+    if(logFilename==NULL){
+        setenv("LOG_FILENAME", "registers.txt", 0);
+    }
+    
     registersFileDescriptor = open(getenv("LOG_FILENAME"), O_WRONLY | O_TRUNC | O_CREAT, 0644);
 
     if (registersFileDescriptor < 0)
     {
         printf("Error opening file");
-        exit(1);
+        registerExit(1);
         return false;
     }
     return true;
