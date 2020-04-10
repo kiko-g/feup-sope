@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
             stat(args.path, &stbuf);
         else
             lstat(args.path, &stbuf);
-        // printf("st_size: %ld  %s path_  \n ",stbuf.st_size,args.path);
+        
         printEntity(scanEntity(stbuf), args.path);    
     }
     else {
@@ -184,7 +184,7 @@ void printEntity(off_t size, char* path)
             size = (size)/args.block_size;
         }
     }
-    // long newSize = ceil(size);
+    
     char entryString[MAX_REG_LEN];
     sprintf(entryString, "%ld\t%s\n",size, path);
     write(STDOUT_FILENO, entryString, strlen(entryString));
