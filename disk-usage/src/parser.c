@@ -13,7 +13,7 @@
 
 // ------------------- Argument Parsing ------------------------- //
 
-struct Arguments args = { .max_depth = INT_MAX, .is_dir = true};
+struct Arguments args = { .max_depth = INT_MAX, .is_dir = true, .pathHasBar = false};
 
 bool parseArguments(char *argv[], int argc)
 {
@@ -23,6 +23,8 @@ bool parseArguments(char *argv[], int argc)
     for (int i = 1; i < argc; i++)
     {
         //remove possible unnecessary slash bar at the end
+        char savePath[MAX_FLAG_LEN];
+        strcpy(savePath, argv[i]);
         if(argv[i][strlen(argv[i])-1] == '/') argv[i][strlen(argv[i]) - 1] = 0; 
 
         flag = strtok(argv[i], "=");
@@ -88,18 +90,26 @@ bool parseArguments(char *argv[], int argc)
                 foundPath = true;
                 args.is_dir = false;
                 strcpy(args.path, argv[i]);
+
+                if(savePath[strlen(savePath)-1] == '/')
+                    args.pathHasBar = true;
             }
 
             else if (path_result == 1) {  // directory
                 foundPath = true;
                 strcpy(args.path, argv[i]);
+
+                if(savePath[strlen(savePath)-1] == '/')
+                    args.pathHasBar = true;
             }
 
             else return false;
         }
     }
 
-    if (!foundPath) strcpy(args.path, ".");
+    if (!foundPath) {
+        strcpy(args.path, ".");
+    }
 
     return true;
 }

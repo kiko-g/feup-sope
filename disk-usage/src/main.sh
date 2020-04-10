@@ -1,3 +1,3 @@
-make clean && make && clear && 
-./simpledu /mnt/1AAE98A8AE987DC7/
-# change arguments on line 2
+(./simpledu ~/Documents/feup/3o_ano -a -b -S --max-depth=1000 || echo $?) | sort -k2 > testeT_simpledu.txt
+(du ~/Documents/feup/3o_ano -l -a -b -S --max-depth=1000 || echo $?) | sort -k2 > testeT_du.txt
+diff -q testeT_simpledu.txt testeT_du.txt > /dev/null 2>&1 && echo OK || echo FAILED
