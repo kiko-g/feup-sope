@@ -26,42 +26,41 @@ struct Register {
 void setInitialTime();
 
 /** 
- * @brief
- * @return 
+ * @brief Creates the registers file and initializes the initial time
+ * @return True if created successfully, False otherwise
  */
 bool createRegistersFile();
 
 /** 
- * @brief
- * @param action
+ * @brief Creates a Register with pid, action and current instant initialized
+ * @param action 
  * @return created register 
  */
 struct Register createRegister(int action);
 
 /** 
- * @brief
+ * @brief Converts actions flags to text
  * @param action
- * @return 
+ * @return Correspondent String
  */
 const char* actionString(int action);
 
 /**
- * @brief 
- * 
+ * @brief Converts signal flags to text
  * @param signal 
- * @return const char* 
+ * @return Correspondent String
  */
 const char* signalString(int signal);
 
 /** 
- * @brief
+ * @brief Exits the program and Registers the Exit
  * @param exitStatus
  * @return 
  */
 void registerExit(int exitStatus);
 
 /** 
- * @brief
+ * @brief Registers the arguments passed to the program
  * @param argv array containing the program arguments
  * @param argc total of program arguments
  * @return 
@@ -69,36 +68,37 @@ void registerExit(int exitStatus);
 void registerCreate(char *argv[], int argc);
 
 /** 
- * @brief
- * @param signal
+ * @brief Registers the signal recieved
+ * @param signal Signal recieved
  * @return 
  */
 void registerRecSignal(int signal);
 
 /** 
- * @brief
- * @param signal
- * @param pid
+ * @brief Registers the signal sent
+ * @param signal Signal Sent
+ * @param pid  Current PID
  * @return 
  */
 void registerSendSignal(pid_t pid,int signal);
 
 /** 
- * @brief
- * @param message 
+ * @brief  Registers the recieved pipe
+ * @param size Message recieved by the pipe 
  * @return 
  */
 void registerRecPipe(int size);
 
 /** 
- * @brief
- * @param message 
+ * @brief  Registers sent by pipe
+ * @param size Message sent by the pipe 
  * @return 
  */
 void registerSendPipe(int size);
 
 /** 
- * @brief
- * @param bytes
+ * @brief Register Entry
+ * @param bytes Size of the File
+ * @param path  Path of the file
  */
 void registerEntry(long bytes,char * path);
