@@ -13,7 +13,7 @@ int validFlag(char *flag);
 /** 
  * @brief activate a flag and thus changing the program's behavior
  * @param flag flag name
- * @param number ?
+ * @param number number used for block size or max depth flags
  * @return true if succeeded, false othwerise
  */
 bool activateFlag(char *flag, int number);
