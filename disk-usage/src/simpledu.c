@@ -152,9 +152,10 @@ int recursiveScan(char *directory_name, int current_depth)
     closedir(dir);
 
     if(args.max_depth == INT_MAX || current_depth <= args.max_depth) {
-        if(getpgrp() == original_pgrp_id) {
+        
+        if(current_depth == 0 && args.pathHasBar)
             strcat(directory_name, "/");
-        }
+
         printEntity(current_dir_size, directory_name);
     }
     return current_dir_size;
