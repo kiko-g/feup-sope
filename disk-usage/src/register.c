@@ -12,10 +12,10 @@ bool createRegistersFile()
 {
     char * logFilename = getenv("LOG_FILENAME");
     if(logFilename==NULL){
-        setenv("LOG_FILENAME", "registers.txt", 0);
+        logFilename = "registers.txt";
     }
     
-    registersFileDescriptor = open(getenv("LOG_FILENAME"), O_WRONLY | O_TRUNC | O_CREAT, 0644);
+    registersFileDescriptor = open(logFilename, O_WRONLY | O_TRUNC | O_CREAT, 0644);
 
     if (registersFileDescriptor < 0)
     {

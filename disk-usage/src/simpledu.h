@@ -15,7 +15,7 @@
  * @return positive index if successfully read a path
  */
 
-int recursiveScan(char* directory_name, int max_depth);
+int recursiveScan(char* directory_name, int current_depth);
 
 /** 
  * @brief

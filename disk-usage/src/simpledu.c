@@ -26,16 +26,27 @@ int main(int argc, char *argv[])
         printf("Error Parsing arguments");
         registerExit(1);
     }
-    recursiveScan(args.path, args.max_depth);
+
+    if(!args.is_dir) { 
+        struct stat stbuf;
+        if (args.deference)
+            stat(args.path, &stbuf);
+        else
+            lstat(args.path, &stbuf);
+
+        printEntity(scanEntity(stbuf), args.path);    
+    }
+    else {
+        recursiveScan(args.path, 0);
+    }
+
     registerExit(0);
 }
 
 // ------------------- Directory Scanning -------------------------
 
-int recursiveScan(char *directory_name, int max_depth)
+int recursiveScan(char *directory_name, int current_depth)
 {
-    if (max_depth == -1) 
-        return 0;
 
     DIR *dir = opendir(directory_name);
     struct dirent *ent;
@@ -69,7 +80,7 @@ int recursiveScan(char *directory_name, int max_depth)
             long file_size = scanEntity(stbuf);
             current_dir_size += file_size;
             
-            if(args.all && max_depth >0) {
+            if(args.all && (args.max_depth == INT_MAX || current_depth < args.max_depth)) {
                 printEntity(file_size, entity_path);
                 registerEntry(file_size, entity_path);
             }
@@ -121,7 +132,7 @@ int recursiveScan(char *directory_name, int max_depth)
                     setpgid(pid, getpid());
                 }
 
-                int next_dir_size = recursiveScan(entity_path, max_depth - 1);
+                int next_dir_size = recursiveScan(entity_path, current_depth + 1);
                 
                 if(!args.separateDirs) {
                     registerSendPipe(next_dir_size);
@@ -139,7 +150,13 @@ int recursiveScan(char *directory_name, int max_depth)
     }
     
     closedir(dir);
-    printEntity(current_dir_size, directory_name);
+
+    if(args.max_depth == INT_MAX || current_depth <= args.max_depth) {
+        if(getpgrp() == original_pgrp_id) {
+            sprintf(directory_name, "%s/", directory_name);
+        }
+        printEntity(current_dir_size, directory_name);
+    }
     return current_dir_size;
 }
 

@@ -29,4 +29,5 @@ struct Arguments {
     int max_depth;
     bool max_depth_flag;
     char path[MAX_FLAG_LEN];
+    bool is_dir;
 };

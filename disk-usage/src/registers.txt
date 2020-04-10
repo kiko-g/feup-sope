@@ -1,14 +1,66 @@
-1789 - 00007207 - CREATE - ./simpledu 
-332 - 00007210 - SEND_PIPE - 8
-395 - 00007210 - EXIT - 0
-651 - 00007209 - RECV_PIPE - 8
-779 - 00007209 - SEND_PIPE - 16
-813 - 00007209 - EXIT - 0
-541 - 00007208 - RECV_PIPE - 16
-650 - 00007208 - SEND_PIPE - 68
-693 - 00007208 - EXIT - 0
-2210 - 00007207 - RECV_PIPE - 68
-313 - 00007211 - SEND_PIPE - 8
-360 - 00007211 - EXIT - 0
-2554 - 00007207 - RECV_PIPE - 8
-2752 - 00007207 - EXIT - 0
+1550 - 00008421 - CREATE - paBn√./simpledu /home/mike/Programs/ -a 
+283 - 00008422 - ENTRY - 0	/home/mike/Programs/Ghidra/bequickorbedead3.gpr
+238 - 00008423 - ENTRY - 4	/home/mike/Programs/Ghidra/keygen.rep/project.prp
+328 - 00008424 - ENTRY - 4	/home/mike/Programs/Ghidra/keygen.rep/user/~index.dat
+394 - 00008424 - SEND_PIPE - 8
+426 - 00008424 - EXIT - 0
+526 - 00008423 - RECV_PIPE - 8
+428 - 00008425 - ENTRY - 4	/home/mike/Programs/Ghidra/keygen.rep/versioned/~index.bak
+522 - 00008425 - ENTRY - 4	/home/mike/Programs/Ghidra/keygen.rep/versioned/~index.dat
+581 - 00008425 - SEND_PIPE - 12
+619 - 00008425 - EXIT - 0
+816 - 00008423 - RECV_PIPE - 12
+921 - 00008423 - ENTRY - 4	/home/mike/Programs/Ghidra/keygen.rep/projectState
+351 - 00008426 - ENTRY - 4	/home/mike/Programs/Ghidra/keygen.rep/idata/~index.bak
+412 - 00008426 - ENTRY - 4	/home/mike/Programs/Ghidra/keygen.rep/idata/~index.dat
+483 - 00008427 - ENTRY - 4	/home/mike/Programs/Ghidra/keygen.rep/idata/00/00000000.prp
+368 - 00008428 - ENTRY - 1188	/home/mike/Programs/Ghidra/keygen.rep/idata/00/~00000000.db/db.2.gbf
+437 - 00008428 - SEND_PIPE - 1192
+470 - 00008428 - EXIT - 0
+954 - 00008427 - RECV_PIPE - 1192
+1091 - 00008427 - SEND_PIPE - 1200
+1143 - 00008427 - EXIT - 0
+679 - 00008426 - RECV_PIPE - 1200
+785 - 00008426 - ENTRY - 4	/home/mike/Programs/Ghidra/keygen.rep/idata/~journal.bak
+852 - 00008426 - SEND_PIPE - 1216
+887 - 00008426 - EXIT - 0
+1158 - 00008423 - RECV_PIPE - 1216
+1273 - 00008423 - SEND_PIPE - 1248
+1301 - 00008423 - EXIT - 0
+537 - 00008422 - RECV_PIPE - 1248
+318 - 00008429 - ENTRY - 4	/home/mike/Programs/Ghidra/bequickorbedead3.rep/project.prp
+334 - 00008430 - ENTRY - 4	/home/mike/Programs/Ghidra/bequickorbedead3.rep/user/~index.dat
+413 - 00008430 - SEND_PIPE - 8
+450 - 00008430 - EXIT - 0
+664 - 00008429 - RECV_PIPE - 8
+412 - 00008431 - ENTRY - 4	/home/mike/Programs/Ghidra/bequickorbedead3.rep/versioned/~index.bak
+510 - 00008431 - ENTRY - 4	/home/mike/Programs/Ghidra/bequickorbedead3.rep/versioned/~index.dat
+625 - 00008431 - SEND_PIPE - 12
+664 - 00008431 - EXIT - 0
+1012 - 00008429 - RECV_PIPE - 12
+1148 - 00008429 - ENTRY - 4	/home/mike/Programs/Ghidra/bequickorbedead3.rep/projectState
+439 - 00008432 - ENTRY - 4	/home/mike/Programs/Ghidra/bequickorbedead3.rep/idata/~index.bak
+534 - 00008432 - ENTRY - 4	/home/mike/Programs/Ghidra/bequickorbedead3.rep/idata/~index.dat
+367 - 00008433 - ENTRY - 4	/home/mike/Programs/Ghidra/bequickorbedead3.rep/idata/00/00000000.prp
+362 - 00008434 - ENTRY - 1332	/home/mike/Programs/Ghidra/bequickorbedead3.rep/idata/00/~00000000.db/db.3.gbf
+448 - 00008434 - SEND_PIPE - 1336
+486 - 00008434 - EXIT - 0
+735 - 00008433 - RECV_PIPE - 1336
+864 - 00008433 - SEND_PIPE - 1344
+919 - 00008433 - EXIT - 0
+869 - 00008432 - RECV_PIPE - 1344
+969 - 00008432 - SEND_PIPE - 1356
+1019 - 00008432 - EXIT - 0
+1489 - 00008429 - RECV_PIPE - 1356
+1610 - 00008429 - SEND_PIPE - 1388
+1645 - 00008429 - EXIT - 0
+832 - 00008422 - RECV_PIPE - 1388
+937 - 00008422 - ENTRY - 0	/home/mike/Programs/Ghidra/keygen.gpr
+1014 - 00008422 - SEND_PIPE - 2640
+1050 - 00008422 - EXIT - 0
+2041 - 00008421 - RECV_PIPE - 2640
+310 - 00008435 - ENTRY - 129744	/home/mike/Programs/Ganache/ganache-2.1.2-linux-x86_64.AppImage
+385 - 00008435 - SEND_PIPE - 129748
+421 - 00008435 - EXIT - 0
+2353 - 00008421 - RECV_PIPE - 129748
+2460 - 00008421 - EXIT - 0

@@ -13,7 +13,7 @@
 
 // ------------------- Argument Parsing ------------------------- //
 
-struct Arguments args = { .max_depth = INT_MAX};
+struct Arguments args = { .max_depth = INT_MAX, .is_dir = true};
 
 bool parseArguments(char *argv[], int argc)
 {
@@ -80,13 +80,23 @@ bool parseArguments(char *argv[], int argc)
 
             if (!activateFlag(flag, number)) printf("Error in flag %s", flag);
         }
+        else {
 
-        else if (isPath(argv[i]) != -1) {
-            foundPath = true;
-            strcpy(args.path, argv[i]);
+            int path_result = isPath(argv[i]);
+
+            if (path_result == 0 || path_result == 2 ) {  // file or symbolic link
+                foundPath = true;
+                args.is_dir = false;
+                strcpy(args.path, argv[i]);
+            }
+
+            else if (path_result == 1) {  // directory
+                foundPath = true;
+                strcpy(args.path, argv[i]);
+            }
+
+            else return false;
         }
-
-        else return false;
     }
 
     if (!foundPath) strcpy(args.path, ".");
