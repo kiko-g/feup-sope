@@ -7,6 +7,7 @@
 #include "simpledu.h"
 #include "register.h"
 #include "parser.h"
+#include "math.h"
 #include "signals.h"
 
 extern struct Arguments args;
@@ -33,7 +34,7 @@ int main(int argc, char *argv[])
             stat(args.path, &stbuf);
         else
             lstat(args.path, &stbuf);
-
+        // printf("st_size: %ld  %s path_  \n ",stbuf.st_size,args.path);
         printEntity(scanEntity(stbuf), args.path);    
     }
     else {
@@ -52,7 +53,7 @@ int recursiveScan(char *directory_name, int current_depth)
     struct dirent *ent;
     struct stat stbuf;
 
-    size_t current_dir_size = 0;
+    off_t current_dir_size = 0;
 
     while ((ent = readdir(dir)) != NULL)
     {
@@ -76,8 +77,7 @@ int recursiveScan(char *directory_name, int current_depth)
 
         // regular file
         if (S_ISREG(stbuf.st_mode) || S_ISLNK(stbuf.st_mode)) {
-            
-            long file_size = scanEntity(stbuf);
+            off_t file_size = scanEntity(stbuf);
             current_dir_size += file_size;
             
             if(args.all && (args.max_depth == INT_MAX || current_depth < args.max_depth)) {
@@ -162,19 +162,28 @@ int recursiveScan(char *directory_name, int current_depth)
 }
 
 
-long scanEntity(struct stat stbuf)
+off_t scanEntity(struct stat stbuf)
 {
     //Checks -B and -b flag
     if (args.bytes) 
         return stbuf.st_size;
-    else if (args.block_size_flag) 
-        return stbuf.st_blocks * 512 / args.block_size;
-    else 
+    else if (args.block_size_flag){
+        return (stbuf.st_blocks * 512);
+    }
+    else
         return stbuf.st_blocks / 2;
 }
 
-void printEntity(long size, char* path)
+void printEntity(off_t size, char* path)
 {
+    if (args.block_size_flag){
+        if((size % args.block_size) != 0) {
+            size = (size)/args.block_size + 1;
+        } else{
+            size = (size)/args.block_size;
+        }
+    }
+    // long newSize = ceil(size);
     char entryString[MAX_REG_LEN];
     sprintf(entryString, "%ld\t%s\n",size, path);
     write(STDOUT_FILENO, entryString, strlen(entryString));
