@@ -153,7 +153,7 @@ int recursiveScan(char *directory_name, int current_depth)
 
     if(args.max_depth == INT_MAX || current_depth <= args.max_depth) {
         if(getpgrp() == original_pgrp_id) {
-            sprintf(directory_name, "%s/", directory_name);
+            strcat(directory_name, "/");
         }
         printEntity(current_dir_size, directory_name);
     }
