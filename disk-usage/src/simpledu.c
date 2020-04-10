@@ -157,6 +157,7 @@ int recursiveScan(char *directory_name, int current_depth)
             strcat(directory_name, "/");
 
         printEntity(current_dir_size, directory_name);
+        registerEntry(current_dir_size, directory_name);
     }
     return current_dir_size;
 }
