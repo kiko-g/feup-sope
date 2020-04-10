@@ -2,11 +2,16 @@
 #include <signal.h>
 #include <stdlib.h>
 #include <time.h>
+#include <sys/times.h>
 #include <string.h>
 #include "register.h"
 
 int registersFileDescriptor;
-clock_t initialTime;
+
+struct tms t;
+clock_t start, end;
+long ticks;
+    
 
 bool createRegistersFile()
 {
@@ -21,22 +26,23 @@ bool createRegistersFile()
     {
         printf("Error opening file");
         registerExit(1);
-        return false;
     }
+
+    ticks = sysconf(_SC_CLK_TCK);
+    start = times(&t);
     return true;
 }
 
 void setInitialTime()
 {
-    initialTime = clock();
+
 }
 
 struct Register createRegister(int action)
 {
     struct Register reg;
     reg.action = action;
-    reg.instant = clock() - initialTime;
-    //reg.info = O que deveria sero info?
+    reg.instant = times(&t) - start;
     reg.pid = getpid();
     return reg;
 }
@@ -44,16 +50,19 @@ struct Register createRegister(int action)
 void writeRegister(const struct Register *reg)
 {
     char regString[MAX_REG_LEN];
-    sprintf(regString, "%.2ld - %.8d - %s - %s\n", reg->instant, reg->pid, actionString(reg->action), reg->info);
+    sprintf(regString, "%.2ld - %.8d - %s - %s\n", reg->instant/ticks, reg->pid, actionString(reg->action), reg->info);
     write(registersFileDescriptor, regString, strlen(regString));
 }
 
 void registerCreate(char *argv[], int argc) {
     struct Register reg =  createRegister(CREATE);
+    
+    strcpy(reg.info, "\0");
     for(int i = 0; i < argc; i++){
 		strcat(reg.info, argv[i]);
         strcat(reg.info," ");
     }
+
     writeRegister(&reg);
 }
 

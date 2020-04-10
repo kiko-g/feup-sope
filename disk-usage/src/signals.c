@@ -29,17 +29,17 @@ void sigint_handler(int signo) {
 }
 
 void sigstop_handler(int signo) {
-    // register sigstop
+    registerRecSignal(SIGSTOP);
     pause();
 }
 
 void sigcont_handler(int signo) {
-    // register sigcont
+    registerRecSignal(SIGCONT);
 }
 
 void sigterm_handler(int signo) {
-    // register sigterm
-    exit(0);
+    registerRecSignal(SIGTERM);
+    registerExit(0);
 }
 
 void install_sigactions() {
@@ -49,7 +49,7 @@ void install_sigactions() {
     action.sa_flags = SA_RESTART;
     if (sigaction(SIGINT, &action, NULL) < 0) {
         fprintf(stderr, "Unable to install SIGINT handler\n");
-        exit(1);
+        registerExit(1);
     }
 
 /*
@@ -60,23 +60,23 @@ void install_sigactions() {
         fprintf(stderr, "Unable to install SIGSTOP handler\n");
         exit(1);
     } 
+*/
 
     action.sa_handler = sigcont_handler;
-    action.sa_flags = 0;
+    action.sa_flags = SA_RESTART;
     sigemptyset(&action.sa_mask);
     if (sigaction(SIGCONT, &action, NULL) < 0) {
         fprintf(stderr, "Unable to install SIGCONT handler\n");
-        exit(1);
+        registerExit(1);
     }  
 
     action.sa_handler = sigterm_handler;
-    action.sa_flags = 0;
+    action.sa_flags = SA_RESTART;
     sigemptyset(&action.sa_mask);
     if (sigaction(SIGTERM, &action, NULL) < 0) {
         fprintf(stderr, "Unable to install SIGTERM handler\n");
-        exit(1);
+        registerExit(1);
     }  
-*/
 }
 
 bool askTerminateProgram() {

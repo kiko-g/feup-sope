@@ -5,7 +5,7 @@ XHDRS = simpledu.h register.h parser.h signals.h
 EXEC = simpledu
 
 $(EXEC): $(OBJS)
-	$(CC) $(CFLAGS) $(OBJS) -o $@ -lm
+	$(CC) $(CFLAGS) $(OBJS) -o $@
 
 %.o: %.c %.h $(XHDRS)
 	$(CC) $(CFLAGS) -c $<
