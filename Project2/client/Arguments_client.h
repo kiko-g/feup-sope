@@ -6,6 +6,7 @@
 
 struct Arguments_Client {
     unsigned int nsecs;
+    char fifoname[MAX_LEN];
 };
 
 
