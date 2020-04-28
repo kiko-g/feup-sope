@@ -1,7 +1,7 @@
 CC = gcc
 CFLAGS = -pthread
-OBJS = Q1.o ../parser/parser.o
-XHDRS = Q1.h Arguments_Server.h ../parser/parser.h
+OBJS = Q1.o ../parser/parser.o ../utils/utils.o
+XHDRS = Q1.h Arguments_Server.h ../parser/parser.h ../utils/utils.h
 EXEC = Q1
 
 $(EXEC): $(OBJS)

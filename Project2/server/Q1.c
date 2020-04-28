@@ -3,6 +3,7 @@
 #include <unistd.h>
 
 #include "../parser/parser.h"
+#include "../utils/utils.h"
 
 
 int main(int argc, char* argv[]){
@@ -11,6 +12,9 @@ int main(int argc, char* argv[]){
     if(parseServerArgs(argc,argv,&serverArgs)){
         exit(1);
     }
+
+  
+    
 }
 
 
