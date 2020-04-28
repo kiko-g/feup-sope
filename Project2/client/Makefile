@@ -1,7 +1,7 @@
 CC = gcc
-CFLAGS = -lm -Wall
-OBJS = U1.o parser.o
-XHDRS = U1.h Arguments_client.h parser.h
+CFLAGS = -pthread
+OBJS = U1.o ../parser/parser.o
+XHDRS = U1.h Arguments_client.h ../parser/parser.h
 EXEC = U1
 
 $(EXEC): $(OBJS)

@@ -1,7 +1,7 @@
 CC = gcc
-CFLAGS = -lm -Wall
-OBJS = Q1.o
-XHDRS = Q1.h
+CFLAGS = -pthread
+OBJS = Q1.o ../parser/parser.o
+XHDRS = Q1.h Arguments_Server.h ../parser/parser.h
 EXEC = Q1
 
 $(EXEC): $(OBJS)
