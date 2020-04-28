@@ -29,6 +29,6 @@ struct Arguments {
     int max_depth;
     bool max_depth_flag;
     char path[MAX_FLAG_LEN];
-    bool pathHasBar; // used when directory path is given without '/' at the end
+    bool pathHasBar;
     bool is_dir;
 };

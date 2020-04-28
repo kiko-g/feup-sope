@@ -17,6 +17,8 @@ void sigint_handler(int signo) {
     }
 
     if (askTerminateProgram()) {
+        registerSendSignal(-child_pid,SIGCONT);
+        kill(-child_pid, SIGCONT);
         registerSendSignal(-child_pid,SIGTERM);
         kill(-child_pid, SIGTERM);
         registerExit(0);
