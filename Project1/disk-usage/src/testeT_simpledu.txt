@@ -1,0 +1,12 @@
+-24327936	/home/monchai/Documents/
+8192	/home/monchai/Documents/CURRICULUM.pdf
+12550912	/home/monchai/Documents/FEUP
+933120	/home/monchai/Documents/FEUP/COMP
+2634496	/home/monchai/Documents/FEUP/IART
+2900736	/home/monchai/Documents/FEUP/LPOO
+751872	/home/monchai/Documents/FEUP/PLOG
+5330432	/home/monchai/Documents/FEUP/SOPE
+256	/home/monchai/Documents/hw.cpp
+-36887808	/home/monchai/Documents/Projects
+-36888064	/home/monchai/Documents/Projects/Unity
+256	/home/monchai/Documents/zas.pl
