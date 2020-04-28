@@ -1,7 +1,7 @@
 CC = gcc
 CFLAGS = -lm -Wall
-OBJS = Q1.o U1.o
-XHDRS = Q1.h U1.h
+OBJS = Q1.o
+XHDRS = Q1.h
 EXEC = Q1
 
 $(EXEC): $(OBJS)
