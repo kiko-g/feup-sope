@@ -8,12 +8,10 @@
 
 int main(int argc, char* argv[]){
 
-    struct Arguments_Server serverArgs; 
-    if(parseServerArgs(argc,argv,&serverArgs)){
+    struct ServerArgs server_args; 
+    if(parse_server_args(argc, argv, &server_args)){
         exit(1);
     }
-
-  
     
 }
 

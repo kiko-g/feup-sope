@@ -4,7 +4,7 @@
 #define T_FLAG "-t"
 
 
-struct Arguments_Server {
+struct ServerArgs {
     unsigned int nsecs;
     char fifoname[MAX_LEN];
 };

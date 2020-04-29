@@ -1,8 +1,23 @@
 
-#include "../client/Arguments_client.h"
-#include "../server/Arguments_Server.h"
+#include "../client/ClientArgs.h"
+#include "../server/ServerArgs.h"
 
+/**
+ * @brief Parses the command line arguments of the client process (U)
+ * 
+ * @param argc number of arguments
+ * @param argv array of argument string
+ * @param clientArgs struct that holds the parsed results
+ * @return int 0 if successful, anything else if otherwise
+ */
+int parse_client_args(int argc, char *argv[], struct ClientArgs * clientArgs);
 
-int parseClientArgs(int argc, char *argv[],struct Arguments_Client * clientArgs);
-
-int parseServerArgs(int argc, char *argv[],struct Arguments_Server * serverArgs);
+/**
+ * @brief Parses the command line arguments of the server process (Q)
+ * 
+ * @param argc number of arguments
+ * @param argv array of argument string
+ * @param serverArgs struct that holds the parsed results
+ * @return int 0 if successful, anything else if otherwises
+ */
+int parse_server_args(int argc, char *argv[],struct ServerArgs * serverArgs);

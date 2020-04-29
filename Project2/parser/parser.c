@@ -5,46 +5,48 @@
 #include <string.h>
 
 
-int parseClientArgs(int argc, char *argv[],struct Arguments_Client * clientArgs){
+int parse_client_args(int argc, char *argv[], struct ClientArgs * client_args){
     if (argc != NUMBER_FLAGS) {
         printf("Please insert arguments in the following format: ");
         printf("U1 <-t secs> fifoname\n");
         return -1;
     }
+
     for (int i = 0; i < argc; i++)
     {
         if(!strcmp(argv[i],"-t")){
 
             if(atoi(argv[i+1])){
 
-                clientArgs->nsecs=atoi(argv[i+1]);
+                client_args->nsecs=atoi(argv[i+1]);
                 i++;
             }
             else return 1;
             
         }
-        else  strncpy(clientArgs->fifoname,argv[i],sizeof(clientArgs->fifoname));
+        else  strncpy(client_args->fifoname,argv[i],sizeof(client_args->fifoname));
         
     }
 
-    printf("Arguments parsed Correctly\n");    
+    printf("Client arguments parsed Correctly\n");    
     return 0;
 }
 
 
-int parseServerArgs(int argc, char *argv[],struct Arguments_Server * serverArgs){
+int parse_server_args(int argc, char *argv[], struct ServerArgs * server_args){
     if (argc != NUMBER_FLAGS) {
         printf("Please insert arguments in the following format: ");
         printf("U1 <-t secs> fifoname\n");
         return -1;
     }
+
     for (int i = 0; i < argc; i++)
     {
         if(!strcmp(argv[i],"-t")){
 
             if(atoi(argv[i+1])){
 
-                serverArgs->nsecs=atoi(argv[i+1]);
+                server_args->nsecs=atoi(argv[i+1]);
                 i++;
             }
             else{
@@ -53,10 +55,10 @@ int parseServerArgs(int argc, char *argv[],struct Arguments_Server * serverArgs)
             }
             
         }
-        else  strncpy(serverArgs->fifoname,argv[i],sizeof(serverArgs->fifoname));
+        else  strncpy(server_args->fifoname,argv[i],sizeof(server_args->fifoname));
         
     }
 
-    printf("Arguments parsed Correctly\n");    
+    printf("Server arguments parsed Correctly\n");    
     return 0;
 }
