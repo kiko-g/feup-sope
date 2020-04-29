@@ -2,6 +2,7 @@
 *.d
 *.o
 *.out
+.vscode/
 simpledu
 U1
 Q1
