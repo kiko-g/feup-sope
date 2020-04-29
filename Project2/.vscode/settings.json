@@ -1,0 +1,10 @@
+{
+    "files.associations": {
+        "*.jjt": "java",
+        "types.h": "c",
+        "unistd.h": "c",
+        "parser.h": "c",
+        "clientargs.h": "c",
+        "serverargs.h": "c"
+    }
+}

@@ -24,7 +24,7 @@ int parse_client_args(int argc, char *argv[], struct ClientArgs * client_args){
             else return 1;
             
         }
-        else  strncpy(client_args->fifoname,argv[i],sizeof(client_args->fifoname));
+        else  strncpy(client_args->fifoname, argv[i],sizeof(client_args->fifoname));
         
     }
 

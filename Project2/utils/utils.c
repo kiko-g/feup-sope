@@ -50,7 +50,13 @@ void log_operation(int i, int pid, long tid, int dur, int pl, int op) {
       break;
   }
 
-  char log_string[MAX_LEN];
+  char log_string[MAX_STR_LEN];
   sprintf(log_string, "%d ; %d ; %d ; %ld ; %d ; %d ; %s\n", timer_duration(), i, pid, tid, dur, pl, oper);
   write(STDOUT_FILENO, log_string, strlen(log_string));
+}
+
+void send_message(int fd, int i, int pid, long tid, int dur, int pl) {
+  char msg_string[MAX_STR_LEN];
+  sprintf(msg_string, "[%d, %d, %ld, %d, %d]", i, pid, tid, dur, pl);
+  write(fd, &msg_string, strlen(msg_string));
 }
