@@ -7,7 +7,7 @@
 clock_t begin;
 
 void timer_begin() {
-  clock_t begin = clock();
+  begin = clock();
 }
 
 int timer_duration(){
@@ -57,6 +57,6 @@ void log_operation(int i, int pid, long tid, int dur, int pl, int op) {
 
 void send_message(int fd, int i, int pid, long tid, int dur, int pl) {
   char msg_string[MAX_STR_LEN];
-  sprintf(msg_string, "[%d, %d, %ld, %d, %d]", i, pid, tid, dur, pl);
+  sprintf(msg_string, "[ %d, %d, %ld, %d, %d ]", i, pid, tid, dur, pl);
   write(fd, &msg_string, strlen(msg_string));
 }

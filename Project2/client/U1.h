@@ -1,4 +1,4 @@
-#define MAX_THREADS 128
+#define MAX_THREADS 10000
 #define UPPER_TIME 30
 #define LOWER_TIME 5
 

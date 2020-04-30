@@ -1,4 +1,4 @@
-#define MAX_THREADS 128
+#define MAX_THREADS 10000
 #define MAX_STR_LEN 128
 
 /**

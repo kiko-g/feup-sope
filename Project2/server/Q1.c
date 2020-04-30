@@ -86,6 +86,7 @@ int main(int argc, char* argv[]){
     }
 
     int fd_public = open(server_args.fifoname, O_RDONLY | O_NONBLOCK); // NONBLOCK so that we don't need to wait for client
+    printf("FIFO NAME:%s\n", server_args.fifoname);
     if(fd_public == -1) {
         char error_msg[MAX_LEN];
         sprintf(error_msg, "Error opening public FIFO\n");
@@ -102,9 +103,10 @@ int main(int argc, char* argv[]){
     char client_msg[MAX_STR_LEN];
 
     while(timer_duration() < server_args.nsecs) {
-        if(read(fd_public, client_msg, MAX_STR_LEN) > 0) {
+        if(read(fd_public, &client_msg, MAX_STR_LEN) > 0) {
             strcpy(thread_args.msg, client_msg);
             pthread_create(&threads[num_threads], NULL, server_thread_task, (void *) &thread_args);
+            num_threads++;
         }
     }
 

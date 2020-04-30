@@ -17,7 +17,10 @@ int end = 0;
 
 void *client_thread_task(void *arg) {
     // open public fifo
-    char *public_fifo = arg;
+    char *public_fifo_name = (char *) arg;
+    char public_fifo[MAX_LEN];
+    sprintf(public_fifo, "../server/%s", public_fifo_name);
+
     int fd_public = open(public_fifo, O_WRONLY);
     if(fd_public == -1) {
         end = 1;
@@ -57,7 +60,7 @@ void *client_thread_task(void *arg) {
 
     // read the server's response from the private fifo
     char server_response[MAX_LEN];
-    if(read(fd_private, server_response, MAX_LEN) < 0) {
+    if(read(fd_private, &server_response, MAX_LEN) < 0) {
         log_operation(i, (int) getpid(), (long) pthread_self(), time_client, -1, FAILD);
         return NULL;
     }
@@ -98,11 +101,12 @@ int main(int argc, char* argv[]){
     pthread_t threads[MAX_THREADS];
 
     timer_begin();
-    while(timer_duration() < client_args.nsecs) {
+    while(timer_duration() < client_args.nsecs && !end) {
         pthread_create(&threads[num_threads], NULL, client_thread_task, client_args.fifoname);
+        pthread_detach(threads[num_threads]);
+        usleep(5*1000);
         i++;
         num_threads++;
-        usleep(50*1000);
     }
 
     pthread_exit(0);
