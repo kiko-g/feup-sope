@@ -13,7 +13,6 @@
 #include "../utils/utils.h"
 
 int i = 1;
-//int end = 0;
 
 void *client_thread_task(void *arg) {
     // open public fifo
@@ -104,15 +103,12 @@ int main(int argc, char* argv[]){
         exit(1);
     }
 
-    //int num_threads = 0;
-    //pthread_t threads[MAX_THREADS];
-
     pthread_t t;
     timer_begin();
-    while(timer_duration() < client_args.nsecs) { //&& !end) {
+    while(timer_duration() < client_args.nsecs) {
         pthread_create(&t, NULL, client_thread_task, client_args.fifoname);
         pthread_detach(t);
-        usleep(5*1000);
+        usleep(REQUEST_INTERVAL*1000);
         i++;
     }
 

@@ -1,6 +1,7 @@
 #define MAX_THREADS 10000
 #define UPPER_TIME 30
 #define LOWER_TIME 5
+#define REQUEST_INTERVAL 20
 
 /**
  * @brief Task for the client's thread
