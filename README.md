@@ -6,7 +6,7 @@
 
 
 
-Developpers:
+Developers:
 * [Francisco Gonçalves](https://github.com/kiko-g)
 * [Miguel Pinto](https://github.com/MiguelDelPinto)
 * [Tiago Alves](https://github.com/tiago-falves)
@@ -16,7 +16,7 @@ Developpers:
 |Project Number|Project Name|Description|
 |:------------:|:----------:|:---------:|
 |       1      |[Simple DU](https://github.com/kiko-g/feup-sope/projects/Project1)| A simplified version of Linux/UNIX command [du](http://linuxcommand.org/lc3_man_pages/du1.html)|
-|2|[Bathrooms](https://github.com/kiko-g/feup-sope/projects/Project2)|TBD|
+|2|[Bathrooms](https://github.com/kiko-g/feup-sope/projects/Project2)|A bathroom access manager using threads|
 
 
 **Disclaimer**:\
