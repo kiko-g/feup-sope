@@ -13,7 +13,9 @@
 #include "../utils/utils.h"
 
 int i = 1;
+int server_open = 1;
 pthread_mutex_t mutex_index = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t mutex_server_open = PTHREAD_MUTEX_INITIALIZER;
 
 void *client_thread_task(void *arg) {
     // open public fifo
@@ -87,6 +89,10 @@ void *client_thread_task(void *arg) {
     // check if a place was given and log it
     if(time_client == -1 && place == -1) {
         log_operation(index, (int) getpid(), (long) pthread_self(), time_client, -1, CLOSD);
+        
+        pthread_mutex_lock(&mutex_server_open);
+        server_open = 0;
+        pthread_mutex_unlock(&mutex_server_open);
     }   
     else {
         log_operation(index, (int) getpid(), (long) pthread_self(), time_client, place, IAMIN);
@@ -114,6 +120,14 @@ int main(int argc, char* argv[]){
     pthread_t t;
     timer_begin();
     while(timer_duration() < client_args.nsecs) {
+        
+        pthread_mutex_lock(&mutex_server_open);
+        if(!server_open) {
+            pthread_mutex_unlock(&mutex_server_open);
+            break;
+        }
+        pthread_mutex_unlock(&mutex_server_open);
+
         pthread_create(&t, NULL, client_thread_task, client_args.fifoname);
         pthread_detach(t);
         usleep(REQUEST_INTERVAL*1000);
