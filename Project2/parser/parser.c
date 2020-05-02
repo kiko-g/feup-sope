@@ -28,7 +28,7 @@ int parse_client_args(int argc, char *argv[], struct ClientArgs * client_args){
         
     }
 
-    printf("Client arguments parsed Correctly\n");    
+    //printf("Client arguments parsed Correctly\n");    
     return 0;
 }
 
@@ -59,6 +59,6 @@ int parse_server_args(int argc, char *argv[], struct ServerArgs * server_args){
         
     }
 
-    printf("Server arguments parsed Correctly\n");    
+    //printf("Server arguments parsed Correctly\n");    
     return 0;
 }

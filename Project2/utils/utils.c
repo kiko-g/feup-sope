@@ -2,17 +2,18 @@
 #include <string.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <time.h>
 #include "utils.h"
 
-clock_t begin;
+time_t begin;
 
 void timer_begin() {
-  begin = clock();
+  begin = time(NULL);
 }
 
 int timer_duration(){
-  clock_t end = clock();
-  int elapsed_time = ((int) (end - begin)) / CLOCKS_PER_SEC;
+  time_t end = time(NULL);
+  int elapsed_time = ((int) (end - begin));
 
   return elapsed_time;
 }

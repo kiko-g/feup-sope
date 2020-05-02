@@ -13,7 +13,7 @@
 #include "../utils/utils.h"
 
 int i = 1;
-int end = 0;
+//int end = 0;
 
 void *client_thread_task(void *arg) {
     // open public fifo
@@ -23,8 +23,7 @@ void *client_thread_task(void *arg) {
 
     int fd_public = open(public_fifo, O_WRONLY);
     if(fd_public == -1) {
-        end = 1;
-        log_operation(i, (int) getpid(), (long) pthread_self(), -1, -1, FAILD); //TODO: check if it's this operation
+        log_operation(i, (int) getpid(), (long) pthread_self(), -1, -1, FAILD);
         return NULL;
     }
 
@@ -45,23 +44,31 @@ void *client_thread_task(void *arg) {
             char error_msg[MAX_LEN];
             sprintf(error_msg, "Error creating private FIFO %s\n", private_fifo);
             write(STDOUT_FILENO, error_msg, strlen(error_msg));
-            exit(1);
+            return NULL;
         }
     }
 
     // open private fifo
-    int fd_private = open(private_fifo, O_RDONLY); //rw
+    int fd_private = open(private_fifo, O_RDONLY | O_NONBLOCK); //rw
     if(fd_private == -1) {
             char error_msg[MAX_LEN];
             sprintf(error_msg, "Error opening private FIFO %s with O_RDONLY\n", private_fifo);
             write(STDOUT_FILENO, error_msg, strlen(error_msg));
-            exit(1);
+            unlink(private_fifo);
+            return NULL;
     }
 
     // read the server's response from the private fifo
+    int attempt = 0;
     char server_response[MAX_LEN];
-    if(read(fd_private, &server_response, MAX_LEN) < 0) {
+    while (read(fd_private, server_response, MAX_LEN) <= 0 && attempt < 10) {
+        usleep(100);
+        attempt++;
+    } 
+    if(attempt == 10) {
         log_operation(i, (int) getpid(), (long) pthread_self(), time_client, -1, FAILD);
+        close(fd_private);
+        unlink(private_fifo);
         return NULL;
     }
 
@@ -75,7 +82,7 @@ void *client_thread_task(void *arg) {
         log_operation(i, (int) getpid(), (long) pthread_self(), time_client, -1, CLOSD);
     }   
     else {
-        log_operation(i, (int) getpid(), (long) pthread_self(), time_client, -1, IAMIN);
+        log_operation(i, (int) getpid(), (long) pthread_self(), time_client, place, IAMIN);
     }
 
     close(fd_private);
@@ -97,19 +104,19 @@ int main(int argc, char* argv[]){
         exit(1);
     }
 
-    int num_threads = 0;
-    pthread_t threads[MAX_THREADS];
+    //int num_threads = 0;
+    //pthread_t threads[MAX_THREADS];
 
+    pthread_t t;
     timer_begin();
-    while(timer_duration() < client_args.nsecs && !end) {
-        pthread_create(&threads[num_threads], NULL, client_thread_task, client_args.fifoname);
-        pthread_detach(threads[num_threads]);
+    while(timer_duration() < client_args.nsecs) { //&& !end) {
+        pthread_create(&t, NULL, client_thread_task, client_args.fifoname);
+        pthread_detach(t);
         usleep(5*1000);
         i++;
-        num_threads++;
     }
 
-    pthread_exit(0);
+    pthread_exit((void *)0);
 }
 
 

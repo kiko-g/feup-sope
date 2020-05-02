@@ -13,6 +13,8 @@
 
 int current_place = 1;
 
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+
 void *server_thread_task(void *arg) {
     server_thread_arguments *thread_args = (server_thread_arguments*) arg;
 
@@ -26,42 +28,28 @@ void *server_thread_task(void *arg) {
     build_private_fifo(private_fifo, pid, tid);
 
     // open the private fifo (if possible)
-    int fd_private, num_tries = 0;
-    do {
-        fd_private = open(private_fifo, O_WRONLY);
-        num_tries++;
-        usleep(500);
-    } while(fd_private == -1 && num_tries < 5);
-    
-    if(fd_private == -1) {
+    int fd_private;
+    if((fd_private = open(private_fifo, O_WRONLY)) == -1) {
         log_operation(i, pid, tid, dur, -1, GAVUP);
         return NULL;
     }
 
     // allocate client and send message
-    char client_allocation[MAX_LEN];
-    if(thread_args->max_duration = timer_duration() + dur) {
-        sprintf(client_allocation, "[ %d, %d, %ld, %d, %d ]", i, (int) getpid(), (long) pthread_self(), dur, current_place);
-        log_operation(i, (int) getpid(), pthread_self(), dur, current_place, ENTER);
+    pthread_mutex_lock(&mutex);
+    int allocated_place = current_place;
+    current_place++;
+    pthread_mutex_unlock(&mutex);
 
-        // TODO: mutex lock
-        current_place++;
-        // TODO: mutex unlock
-
-        write(fd_private, &client_allocation, MAX_LEN);
-
-        // wait for the client in the bathroom
-        usleep(dur*1000);
-
-        // TODO: free the space
-    }
-    else {
-        sprintf(client_allocation, "[ %d, %d, %ld, %d, %d ]", i, (int) getpid(), (long) pthread_self(), -1, -1);
-        log_operation(i, (int) getpid(), pthread_self(), -1, -1, TLATE);
-        log_operation(i, (int) getpid(), pthread_self(), -1, -1, TIMUP); // TODO: is it here ???
-    }
-
+    send_message(fd_private, i, (int) getpid(), pthread_self(), dur, allocated_place);
     close(fd_private);
+
+    log_operation(i, (int) getpid(), pthread_self(), dur, allocated_place, ENTER);
+
+    // wait for the client in the bathroom
+    usleep(dur*1000);
+
+    log_operation(i, (int) getpid(), pthread_self(), dur, allocated_place, TIMUP);
+
     return NULL;
 }
 
@@ -86,7 +74,6 @@ int main(int argc, char* argv[]){
     }
 
     int fd_public = open(server_args.fifoname, O_RDONLY | O_NONBLOCK); // NONBLOCK so that we don't need to wait for client
-    printf("FIFO NAME:%s\n", server_args.fifoname);
     if(fd_public == -1) {
         char error_msg[MAX_LEN];
         sprintf(error_msg, "Error opening public FIFO\n");
@@ -95,25 +82,48 @@ int main(int argc, char* argv[]){
         exit(1);
     }
 
-    int num_threads = 0;
-    pthread_t threads[MAX_THREADS];
-
     server_thread_arguments thread_args;
     thread_args.max_duration = server_args.nsecs;
     char client_msg[MAX_STR_LEN];
+    pthread_t t;
 
     while(timer_duration() < server_args.nsecs) {
-        if(read(fd_public, &client_msg, MAX_STR_LEN) > 0) {
+        if(read(fd_public, &client_msg, MAX_STR_LEN) > 0 && client_msg[0] == '[') {
             strcpy(thread_args.msg, client_msg);
-            pthread_create(&threads[num_threads], NULL, server_thread_task, (void *) &thread_args);
-            num_threads++;
+            pthread_create(&t, NULL, server_thread_task, (void *) &thread_args);
+            pthread_detach(t);
         }
+    }
+
+    // TODO: check if this step is necessary
+    if(read(fd_public, &client_msg, MAX_STR_LEN) > 0 && client_msg[0] == '[') {
+
+        // parse private fifo name and client's message
+        int i, pid, dur;
+        long tid;
+        sscanf(client_msg, "[ %d, %d, %ld, %d, -1 ]", &i, &pid, &tid, &dur);
+        log_operation(i, pid, tid, dur, -1, RECVD);
+
+        char private_fifo[MAX_LEN];
+        build_private_fifo(private_fifo, pid, tid);
+
+        // open the private fifo (if possible)
+        int fd_private;
+        if((fd_private = open(private_fifo, O_WRONLY)) == -1) {
+            log_operation(i, pid, tid, dur, -1, GAVUP);
+        }
+        else {
+            send_message(fd_private, i, (int) getpid(), pthread_self(), -1, -1);
+            close(fd_private);
+            log_operation(i, pid, tid, dur, -1, TLATE);
+        }
+
     }
 
     close(fd_public);
     unlink(server_args.fifoname);
 
-    pthread_exit(0);
+    pthread_exit((void *)0);
 }
 
 
