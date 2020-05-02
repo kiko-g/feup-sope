@@ -2,19 +2,12 @@
 #define MAX_STR_LEN 128
 
 /**
- * @brief 
- * 
- */
-typedef struct server_thread_arguments {
-    char msg[MAX_STR_LEN];
-    int max_duration;
-} server_thread_arguments;
-
-/**
- * @brief 
- * 
- * @param arg 
- * @return void* 
+ * @brief Task for the server's threads
+ * Receives a message from a client asking for placement. It parses it and
+ * then calculates a place for it. It then opens the client's private fifo
+ * according to protocol and answers to the request. It also takes into account
+ * the very rare case when a request is sent before the time is over, but
+ * it's answered after the time's over
  */
 void *server_thread_task(void *arg);
 

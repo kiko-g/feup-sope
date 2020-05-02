@@ -13,6 +13,7 @@
 #include "../utils/utils.h"
 
 int i = 1;
+pthread_mutex_t mutex_index = PTHREAD_MUTEX_INITIALIZER;
 
 void *client_thread_task(void *arg) {
     // open public fifo
@@ -20,16 +21,23 @@ void *client_thread_task(void *arg) {
     char public_fifo[MAX_LEN];
     sprintf(public_fifo, "../server/%s", public_fifo_name);
 
-    int fd_public = open(public_fifo, O_WRONLY);
+    // increment index -- safely
+    int index;
+    pthread_mutex_lock(&mutex_index);
+    index = i;
+    i++;
+    pthread_mutex_unlock(&mutex_index);
+
+    int fd_public = open(public_fifo, O_WRONLY | O_NONBLOCK);
     if(fd_public == -1) {
-        log_operation(i, (int) getpid(), (long) pthread_self(), -1, -1, FAILD);
+        log_operation(index, (int) getpid(), (long) pthread_self(), -1, -1, FAILD);
         return NULL;
     }
 
     // send random request
     int time_client = (rand() %  (UPPER_TIME - LOWER_TIME + 1));
-    log_operation(i, (int) getpid(), (long) pthread_self(), -1, -1, IWANT);
-    send_message(fd_public, i, (int) getpid(), (long) pthread_self(), time_client, -1);
+    log_operation(index, (int) getpid(), (long) pthread_self(), -1, -1, IWANT);
+    send_message(fd_public, index, (int) getpid(), (long) pthread_self(), time_client, -1);
     close(fd_public);
 
 
@@ -60,12 +68,12 @@ void *client_thread_task(void *arg) {
     // read the server's response from the private fifo
     int attempt = 0;
     char server_response[MAX_LEN];
-    while (read(fd_private, server_response, MAX_LEN) <= 0 && attempt < 10) {
+    while (read(fd_private, server_response, MAX_LEN) <= 0 && attempt < MAX_ATTEMPTS) {
         usleep(100);
         attempt++;
     } 
     if(attempt == 10) {
-        log_operation(i, (int) getpid(), (long) pthread_self(), time_client, -1, FAILD);
+        log_operation(index, (int) getpid(), (long) pthread_self(), time_client, -1, FAILD);
         close(fd_private);
         unlink(private_fifo);
         return NULL;
@@ -78,10 +86,10 @@ void *client_thread_task(void *arg) {
 
     // check if a place was given and log it
     if(time_client == -1 && place == -1) {
-        log_operation(i, (int) getpid(), (long) pthread_self(), time_client, -1, CLOSD);
+        log_operation(index, (int) getpid(), (long) pthread_self(), time_client, -1, CLOSD);
     }   
     else {
-        log_operation(i, (int) getpid(), (long) pthread_self(), time_client, place, IAMIN);
+        log_operation(index, (int) getpid(), (long) pthread_self(), time_client, place, IAMIN);
     }
 
     close(fd_private);

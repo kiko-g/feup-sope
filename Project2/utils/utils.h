@@ -14,7 +14,7 @@
 #define MAX_STR_LEN 128
 
 /**
- * @brief Initializes the timer
+ * @brief Initializes the timer, in seconds
  * 
  */
 void timer_begin();
@@ -22,7 +22,7 @@ void timer_begin();
 /**
  * @brief Returns the current duration
  * 
- * @return int 
+ * @return int the duration between the starting time and the current time, in seconds
  */
 int timer_duration();
 

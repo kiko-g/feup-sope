@@ -29,7 +29,7 @@ void *server_thread_task(void *arg) {
 
     // open the private fifo (if possible)
     int fd_private;
-    if((fd_private = open(private_fifo, O_WRONLY)) == -1) {
+    if((fd_private = open(private_fifo, O_WRONLY | O_NONBLOCK)) == -1) {
         log_operation(i, pid, tid, dur, -1, GAVUP);
         return NULL;
     }
@@ -69,6 +69,7 @@ int main(int argc, char* argv[]){
         exit(1);
     }
 
+    // create fifo
     timer_begin();
     if(mkfifo(server_args.fifoname, 0660) < 0) {
         if(errno == EEXIST) {
@@ -81,6 +82,7 @@ int main(int argc, char* argv[]){
         }
     }
 
+    // open fifo
     int fd_public = open(server_args.fifoname, O_RDONLY | O_NONBLOCK);
     if(fd_public == -1) {
         char error_msg[MAX_LEN];
@@ -90,16 +92,12 @@ int main(int argc, char* argv[]){
         exit(1);
     }
 
-    //server_thread_arguments thread_args;
-    //thread_args.max_duration = server_args.nsecs;
     char client_msg[MAX_STR_LEN];
     pthread_t t;
 
+    // receive and answer request
     while(timer_duration() < server_args.nsecs) {
         if(read(fd_public, &client_msg, MAX_STR_LEN) > 0 && client_msg[0] == '[') {
-            //char thread_arg[MAX_STR_LEN];
-            //strcpy(thread_arg, client_msg);
-            //strcpy(thread_args.msg, client_msg);
             pthread_create(&t, NULL, server_thread_task, (void *) &client_msg);
             pthread_detach(t);
         }
