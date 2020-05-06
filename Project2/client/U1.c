@@ -131,7 +131,6 @@ int main(int argc, char* argv[]){
         pthread_create(&t, NULL, client_thread_task, client_args.fifoname);
         pthread_detach(t);
         usleep(REQUEST_INTERVAL*1000);
-        i++;
     }
 
     pthread_exit((void *)0);
