@@ -36,7 +36,7 @@ void *server_thread_task(void *arg) {
 
     // check if client was too late 
     // (rare case that client places request before closing, but the request is only handled after closing)
-    if(timer_duration() >= server_args.nsecs) {    
+    if(timer_duration() >= (int) server_args.nsecs) {    
         send_message(fd_private, i, (int) getpid(), pthread_self(), -1, -1);
         close(fd_private);
         log_operation(i, (int) getpid(), pthread_self(), -1, -1, TLATE);
@@ -96,7 +96,7 @@ int main(int argc, char* argv[]){
     pthread_t t;
 
     // receive and answer request
-    while(timer_duration() < server_args.nsecs) {
+    while(timer_duration() < (int) server_args.nsecs) {
         if(read(fd_public, &client_msg, MAX_STR_LEN) > 0 && client_msg[0] == '[') {
             pthread_create(&t, NULL, server_thread_task, (void *) &client_msg);
             pthread_detach(t);

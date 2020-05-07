@@ -19,9 +19,9 @@ pthread_mutex_t mutex_server_open = PTHREAD_MUTEX_INITIALIZER;
 
 void *client_thread_task(void *arg) {
     // open public fifo
-    char *public_fifo_name = (char *) arg;
-    char public_fifo[MAX_LEN];
-    sprintf(public_fifo, "../server/%s", public_fifo_name);
+    char *public_fifo = (char *) arg;
+    //char public_fifo[MAX_LEN];
+    //sprintf(public_fifo, "../server/%s", public_fifo_name);
 
     // increment index -- safely
     int index;
@@ -119,7 +119,7 @@ int main(int argc, char* argv[]){
 
     pthread_t t;
     timer_begin();
-    while(timer_duration() < client_args.nsecs) {
+    while(timer_duration() < (int) client_args.nsecs) {
         
         pthread_mutex_lock(&mutex_server_open);
         if(!server_open) {
