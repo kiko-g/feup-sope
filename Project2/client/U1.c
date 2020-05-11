@@ -50,7 +50,7 @@ void *client_thread_task(void *arg) {
         if(errno == EEXIST) {
         }
         else {
-            char error_msg[MAX_LEN];
+            char error_msg[MAX_LEN*2];
             sprintf(error_msg, "Error creating private FIFO %s\n", private_fifo);
             write(STDOUT_FILENO, error_msg, strlen(error_msg));
             return NULL;
@@ -60,7 +60,7 @@ void *client_thread_task(void *arg) {
     // open private fifo
     int fd_private = open(private_fifo, O_RDONLY | O_NONBLOCK); //rw
     if(fd_private == -1) {
-            char error_msg[MAX_LEN];
+            char error_msg[MAX_LEN*2];
             sprintf(error_msg, "Error opening private FIFO %s with O_RDONLY\n", private_fifo);
             write(STDOUT_FILENO, error_msg, strlen(error_msg));
             unlink(private_fifo);
