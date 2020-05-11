@@ -12,7 +12,7 @@
 #include "../utils/utils.h"
 
 int current_place = 1;
-struct ServerArgs server_args; 
+struct ServerArgs server_args ; 
 pthread_mutex_t mutex_place = PTHREAD_MUTEX_INITIALIZER;
 
 void *server_thread_task(void *arg) {
@@ -68,6 +68,11 @@ int main(int argc, char* argv[]){
         perror("Error parsing server args");
         exit(1);
     }
+
+    printf("Fifoname %s\n",server_args.fifoname);
+    printf("NSecs %d\n",server_args.nsecs);
+    printf("NPlaces %d\n",server_args.nplaces);
+    printf("NThreads %d\n",server_args.nthreads);
 
     // create fifo
     timer_begin();
