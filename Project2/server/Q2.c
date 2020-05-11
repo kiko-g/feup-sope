@@ -76,9 +76,7 @@ int main(int argc, char* argv[]){
     }
 
     // initialize semaphores, if number of threads/places are limited
-    if(server_args.nthreads) {
-        sem_init(&sem_nthreads, 0, server_args.nthreads);
-    }
+    if(server_args.nthreads) sem_init(&sem_nthreads, 0, server_args.nthreads);
 
     // create fifo
     timer_begin();
