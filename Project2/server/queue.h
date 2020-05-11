@@ -1,13 +1,4 @@
-/**
- * @brief Struct for a bathroom entry request
- * 
- */
-typedef struct BathroomRequest {
-    int index;
-    int pid;
-    int tid;
-    int dur;
-} BathroomRequest;
+#define NO_AVAILABLE_STALL -1
 
 /**
  * @brief Struct that simulates a queue
@@ -18,7 +9,7 @@ typedef struct Queue {
     int back;
     int length;
     int capacity;
-    BathroomRequest* requests;
+    unsigned* available_stalls;
 } Queue;
 
 /**
@@ -43,7 +34,7 @@ int empty_queue(Queue* queue);
  * @param queue Queue object to operate on
  * @return BathroomRequest the request at the front the queue
  */
-BathroomRequest front_queue(Queue* queue);
+unsigned front_queue(Queue* queue);
 
 /**
  * @brief Pushes a request to the queue
@@ -51,7 +42,7 @@ BathroomRequest front_queue(Queue* queue);
  * @param queue Queue object to operate on
  * @param request to be pushed
  */
-void push_queue(Queue* queue, BathroomRequest request);
+void push_queue(Queue* queue, unsigned available_stall);
 
 /**
  * @brief Doubles the size of a queue
@@ -66,7 +57,7 @@ void double_queue(Queue* queue);
  * @param queue Queue object to operate on
  * @return BathroomRequest 
  */
-BathroomRequest pop_queue(Queue* queue);
+unsigned pop_queue(Queue* queue);
 
 /**
  * @brief Frees the memory taken by the queue

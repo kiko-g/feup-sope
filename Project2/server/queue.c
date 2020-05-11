@@ -9,7 +9,11 @@ Queue* create_queue(int capacity) {
     queue->length = 0;
     queue->front = 0;
     queue->back = capacity - 1;
-    queue->requests = (BathroomRequest*) malloc(capacity * sizeof(BathroomRequest));
+    queue->available_stalls = (unsigned*) malloc(capacity * sizeof(unsigned));
+
+    for(int i = 1; i <= capacity; i++) {
+        queue->available_stalls[i-1] = i;
+    }
     
     return queue;
 }
@@ -23,33 +27,38 @@ int empty_queue(Queue* queue) {
 }
 
 
-BathroomRequest front_queue(Queue* queue) {
+unsigned front_queue(Queue* queue) {
     return queue->requests[queue->front];
 }
 
 
-void push_queue(Queue* queue, BathroomRequest request) {
+void push_queue(Queue* queue, unsigned available_stall) {
+    /*
     if(queue->length == queue->capacity) {
         double_queue(queue);
     }
+    */
 
     queue->length++;
     queue->back = (queue->back + 1) % queue->capacity;
 
-    queue->requests[queue->back] = request;
+    queue->available_stalls[queue->back] = available_stall;
 }
 
 
-BathroomRequest pop_queue(Queue* queue) {
-    BathroomRequest request = queue->requests[queue->front];
+unsigned pop_queue(Queue* queue) {
+    if(queue->length == 0)
+        return NO_AVAILABLE_STALL;
+
+    unsigned available_stall = queue->available_stalls[queue->front];
 
     queue->length--;
     queue->front = (queue->front + 1) % queue->capacity;
 
-    return request;
+    return available_stall;
 }
 
-
+/*
 void double_queue(Queue* queue) {
     Queue* bigger_queue = create_queue(queue->capacity * 2);
     while(queue->length > 0) {
@@ -59,9 +68,10 @@ void double_queue(Queue* queue) {
     free(queue->requests);
     queue = bigger_queue;
 }
+*/
 
 
 void destroy_queue(Queue* queue) {
-    free(queue->requests);
+    free(queue->available_stalls);
     free(queue);
 }

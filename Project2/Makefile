@@ -24,4 +24,4 @@ Q2: $(Q2OBJ) $(COBJ)
 
 .PHONY : clean
 clean:
-	rm $(UOBJ) $(Q1OBJ) $(COBJ) $(TARGETS)
+	rm $(UOBJ) $(Q1OBJ) $(Q2OBJ) $(COBJ) $(TARGETS)
