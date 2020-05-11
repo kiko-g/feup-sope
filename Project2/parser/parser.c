@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include "parser.h"
+#include <stdbool.h>
 #include <string.h>
 
 
@@ -38,10 +39,14 @@ int parse_server_args(int argc, char *argv[], struct ServerArgs * server_args){
         printf("Qn <-t nsecs> [-l nplaces] [-n nthreads] fifoname\n");
         return -1;
     }
+    bool foundSeconds = false;
+    bool foundFifoname = false;
 
     for (int i = 0; i < argc; i++)
     {
         if(!strcmp(argv[i],"-t")){
+            foundSeconds = true;
+
             if(server_args->nsecs > 0){
                 printf("Already Defined nsecs\n");
                 return 1;
@@ -86,11 +91,20 @@ int parse_server_args(int argc, char *argv[], struct ServerArgs * server_args){
                 return 1;
             }
         }
-        else if(argv[i][0]!='-' && server_args->fifoname[0] == '\0'){
+        else if(argv[i][0]!='-' && i != 0){
+            foundFifoname = true;
             strncpy(server_args->fifoname,argv[i],sizeof(server_args->fifoname));
         }
 
-    
+    }
+
+    if(!foundFifoname){
+        printf("Please insert Fifoname\n");
+        return 1;
+    }
+    if (!foundSeconds){
+        printf("Please define nsecs\n");
+        return 1;
     }
 
     return 0;
