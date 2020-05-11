@@ -66,3 +66,9 @@ unsigned pop_queue(Queue* queue);
  */
 void destroy_queue(Queue* queue);
 
+/**
+ * @brief Fills the queue with sequential numbers until capacity
+ * @param queue Queue to fill
+ */ 
+void fill_queue(Queue * queue);
+

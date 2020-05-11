@@ -12,7 +12,7 @@ Queue* create_queue(int capacity) {
     queue->available_stalls = (unsigned*) malloc(capacity * sizeof(unsigned));
 
     for(int i = 1; i <= capacity; i++) {
-        queue->available_stalls[i-1] = i;
+        push_queue(queue,i);
     }
     
     return queue;
@@ -28,7 +28,7 @@ int empty_queue(Queue* queue) {
 
 
 unsigned front_queue(Queue* queue) {
-    return queue->requests[queue->front];
+    return queue->front;
 }
 
 
@@ -57,6 +57,8 @@ unsigned pop_queue(Queue* queue) {
 
     return available_stall;
 }
+
+
 
 /*
 void double_queue(Queue* queue) {
