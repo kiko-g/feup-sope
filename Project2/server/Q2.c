@@ -33,8 +33,8 @@ void *server_thread_task(void *arg) {
     int fd_private;
     if((fd_private = open(private_fifo, O_WRONLY | O_NONBLOCK)) == -1) {
         log_operation(i, pid, tid, dur, -1, GAVUP);
-        
-        if(server_args.nthreads) sem_post(sem_nthreads);
+
+        if(server_args.nthreads) sem_post(&sem_nthreads);
         return NULL;
     }
 
@@ -45,7 +45,7 @@ void *server_thread_task(void *arg) {
         close(fd_private);
         log_operation(i, (int) getpid(), pthread_self(), -1, -1, TLATE);
 
-        if(server_args.nthreads) sem_post(sem_nthreads);
+        if(server_args.nthreads) sem_post(&sem_nthreads);
         return NULL;
     }
 
@@ -64,7 +64,7 @@ void *server_thread_task(void *arg) {
 
     log_operation(i, (int) getpid(), pthread_self(), dur, allocated_place, TIMUP);
 
-    if(server_args.nthreads) sem_post(sem_nthreads);
+    if(server_args.nthreads) sem_post(&sem_nthreads);
     return NULL;
 }
 
@@ -111,7 +111,7 @@ int main(int argc, char* argv[]){
         if(read(fd_public, &client_msg, MAX_STR_LEN) > 0 && client_msg[0] == '[') {
 
             // create thread if there's one available
-            if(server_args.nthreads) sem_wait(sem_nthreads);
+            if(server_args.nthreads) sem_wait(&sem_nthreads);
 
             pthread_create(&t, NULL, server_thread_task, (void *) &client_msg);
             pthread_detach(t);
