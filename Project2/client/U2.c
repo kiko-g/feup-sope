@@ -30,14 +30,13 @@ void *client_thread_task(void *arg) {
 
     int fd_public = open(public_fifo, O_WRONLY | O_NONBLOCK);
     if(fd_public == -1) {
-        //log_operation(index, (int) getpid(), (long) pthread_self(), -1, -1, FAILD);
         perror("Cannot open public FIFO with O_WRONLY and O_NONBLOCK");
         return NULL;
     }
 
     // create private fifo before sending message, making sure that the server does not access it before it's created
     char private_fifo[MAX_LEN];
-    make_private_fifo(private_fifo);
+    sprintf(private_fifo, "/tmp/%d.%ld", getpid(), pthread_self());
     if(mkfifo(private_fifo, 0660) < 0) {
         if(errno == EEXIST) {
             perror("FIFO already exists");
@@ -100,10 +99,6 @@ void *client_thread_task(void *arg) {
     return NULL;
 }
 
-void make_private_fifo(char *fifo_name) {
-    sprintf(fifo_name, "/tmp/%d.%d", (int) getpid(), (int) pthread_self());
-}
-
 int main(int argc, char* argv[]){
 
     srand(time(0));
@@ -125,9 +120,13 @@ int main(int argc, char* argv[]){
         }
         pthread_mutex_unlock(&mutex_server_open);
 
-        pthread_create(&t, NULL, client_thread_task, client_args.fifoname);
-        pthread_detach(t);
-        
+        if(pthread_create(&t, NULL, client_thread_task, client_args.fifoname)) {
+            perror("Failed creating client thread");
+        }
+        else {
+            pthread_detach(t);
+        }
+         
         usleep(REQUEST_INTERVAL*1000);
     }
 

@@ -10,10 +10,3 @@
  * it's answered after the time's over
  */
 void *server_thread_task(void *arg);
-
-/**
- * @brief 
- * 
- * @param fifo_name 
- */
-void build_private_fifo(char *fifo_name, int pid, int tid);

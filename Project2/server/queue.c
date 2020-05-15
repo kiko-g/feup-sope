@@ -32,6 +32,9 @@ unsigned front_queue(Queue* queue) {
 
 
 void push_queue(Queue* queue, unsigned available_stall) {
+    if(queue == NULL)
+        return;
+        
     queue->length++;
     queue->back = (queue->back + 1) % queue->capacity;
 

@@ -47,7 +47,7 @@ void *server_thread_task(void *arg) {
             log_operation(client_msg.i, getpid(), pthread_self(), client_msg.dur, -1, GAVUP);
         else{
             
-            log_operation(client_msg.i, (int) getpid(), pthread_self(), -1, -1, TLATE);
+            log_operation(client_msg.i, getpid(), pthread_self(), -1, -1, TLATE);
         }
         
         close(fd_private);
@@ -195,8 +195,12 @@ int main(int argc, char* argv[]){
     if(close(fd_public)<0)
         perror("Error closing FIFO");
 
-    if(server_args.nplaces) destroy_queue(queue);
-
+    if(server_args.nplaces) {
+        pthread_mutex_lock(&mutex_place);
+        destroy_queue(queue);
+        queue = NULL;
+        pthread_mutex_unlock(&mutex_place);
+    }
 
     pthread_exit(0);
 }

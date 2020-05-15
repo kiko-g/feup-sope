@@ -13,11 +13,3 @@
  */
 void *client_thread_task(void *arg);
 
-/**
- * @brief Creates the name of the private fifo
- * to connect the client to the server
- * 
- * @param fifoname The name of the new private fifo
- */
-void make_private_fifo(char *fifo_name);
-

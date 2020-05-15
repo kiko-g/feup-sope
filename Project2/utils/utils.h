@@ -20,7 +20,7 @@
 typedef struct RequestMessage {
     int i;
     int pid;
-    long tid;
+    long unsigned int tid;
     int dur;
     int pl;
 } RequestMessage;
