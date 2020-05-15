@@ -20,7 +20,7 @@ struct ServerArgs server_args;
 Queue * queue;
 
 void *server_thread_task(void *arg) {
-    RequestMessage client_msg = *(RequestMessage*) arg;
+    struct RequestMessage client_msg = *( struct RequestMessage*) arg;
 
     // parse private fifo name and client's message
     log_operation(client_msg.i, client_msg.pid, client_msg.tid, client_msg.dur, -1, RECVD);
@@ -155,7 +155,7 @@ int main(int argc, char* argv[]){
         if(read(fd_public, &client_msg, sizeof(client_msg)) > 0) {
 
             // copy message to another struct to ensure safe access
-            RequestMessage *client_msg_copy = malloc(sizeof(RequestMessage));
+            struct RequestMessage *client_msg_copy = malloc(sizeof(struct RequestMessage));
             *client_msg_copy = client_msg;
 
             // create thread if there's one available
@@ -176,12 +176,12 @@ int main(int argc, char* argv[]){
     while(read(fd_public, &client_msg, sizeof(client_msg)) > 0) {  
 
         // copy message to another struct to ensure safe access
-        RequestMessage *client_msg_copy = malloc(sizeof(RequestMessage));
+        struct RequestMessage *client_msg_copy = malloc(sizeof(struct RequestMessage));
         *client_msg_copy = client_msg;      
 
         // create thread if there's one available
         if(server_args.nthreads) sem_wait(&sem_nthreads);
-        if(pthread_create(&t, NULL, server_thread_task, (void *) &client_msg)) {
+        if(pthread_create(&t, NULL, server_thread_task,client_msg_copy)) {
             perror("Failed creating server thread");
             free(client_msg_copy);
         }

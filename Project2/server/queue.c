@@ -22,7 +22,6 @@ Queue* create_queue(int capacity) {
 int empty_queue(Queue* queue) {
     if(queue->length == 0)
         return 1;
-
     return 0;
 }
 
@@ -33,12 +32,6 @@ unsigned front_queue(Queue* queue) {
 
 
 void push_queue(Queue* queue, unsigned available_stall) {
-    /*
-    if(queue->length == queue->capacity) {
-        double_queue(queue);
-    }
-    */
-
     queue->length++;
     queue->back = (queue->back + 1) % queue->capacity;
 
@@ -57,21 +50,6 @@ unsigned pop_queue(Queue* queue) {
 
     return available_stall;
 }
-
-
-
-/*
-void double_queue(Queue* queue) {
-    Queue* bigger_queue = create_queue(queue->capacity * 2);
-    while(queue->length > 0) {
-        push_queue(bigger_queue, pop_queue(queue));
-    }
-
-    free(queue->requests);
-    queue = bigger_queue;
-}
-*/
-
 
 void destroy_queue(Queue* queue) {
     free(queue->available_stalls);
