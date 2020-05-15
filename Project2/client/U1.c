@@ -34,13 +34,6 @@ void *client_thread_task(void *arg) {
         return NULL;
     }
 
-    // send random request
-    int time_client = (rand() %  (UPPER_TIME - LOWER_TIME + 1));
-    log_operation(index, (int) getpid(), (long) pthread_self(), -1, -1, IWANT);
-    send_message(fd_public, index, (int) getpid(), (long) pthread_self(), time_client, -1);
-    close(fd_public);
-
-
     // create private fifo
     char private_fifo[MAX_LEN];
     make_private_fifo(private_fifo);
@@ -62,9 +55,16 @@ void *client_thread_task(void *arg) {
             char error_msg[MAX_LEN*2];
             sprintf(error_msg, "Error opening private FIFO %s with O_RDONLY\n", private_fifo);
             write(STDOUT_FILENO, error_msg, strlen(error_msg));
-            unlink(private_fifo);
+            if(unlink(private_fifo) < 0) perror("Error deleting private FIFO\n");
             return NULL;
     }
+
+    // send random request
+    int time_client = (rand() %  (UPPER_TIME - LOWER_TIME + 1));
+    log_operation(index, (int) getpid(), (long) pthread_self(), -1, -1, IWANT);
+    send_message(fd_public, index, (int) getpid(), (long) pthread_self(), time_client, -1);
+    
+    if(close(fd_public) < 0) fprintf(stderr, "Error closing FIFO\n") ;
 
     // read the server's response from the private fifo
     int attempt = 0;
@@ -131,7 +131,7 @@ int main(int argc, char* argv[]){
         usleep(REQUEST_INTERVAL*1000);
     }
 
-    pthread_exit((void *)0);
+    pthread_exit(0);
 }
 
 
