@@ -48,6 +48,8 @@ void *client_thread_task(void *arg) {
         }
     }
 
+    printf("11111111111111111111\n");
+
     // send random request
     int time_client = (rand() %  (UPPER_TIME - LOWER_TIME + 1));
 
@@ -55,20 +57,25 @@ void *client_thread_task(void *arg) {
     if(write(fd_public, &request_msg, sizeof(request_msg)) < 0) {
         if(close(fd_public)) perror("Error closing public FIFO");
         if(unlink(private_fifo)) perror("Error unlinking private FIFO");
-
         return NULL; 
     } else {
         log_operation(index, getpid(), pthread_self(), time_client, -1, IWANT);
         if(close(fd_public) < 0) perror("Error closing public FIFO");
     }
 
+    printf("15151515151515151515\n");
+
     // open private fifo
     int fd_private = open(private_fifo, O_RDONLY);
+    printf("222222222222222222\n");
+
     if(fd_private == -1) {
-            perror("Error opening private FIFO with O_RDONLY");
-            if(unlink(private_fifo) < 0) perror("Error deleting private FIFO");
-            return NULL;
+        perror("Error opening private FIFO with O_RDONLY");
+        if(unlink(private_fifo) < 0) perror("Error deleting private FIFO");
+        return NULL;
     }
+
+
     
     // read the server's response from the private fifo
     int attempt = 0;
@@ -94,9 +101,15 @@ void *client_thread_task(void *arg) {
     else {
         log_operation(index, getpid(), pthread_self(), time_client, server_msg.pl, IAMIN);
     }
+    printf("33333333333333333333\n");
+
 
     if(close(fd_private) < 0) perror("Error closing FIFO");
     if(unlink(private_fifo) < 0) perror("Error destroying FIFO");
+
+
+    printf("4444444444444444444444\n");
+
     return NULL;
 }
 
@@ -105,6 +118,8 @@ void make_private_fifo(char *fifo_name) {
 }
 
 int main(int argc, char* argv[]){
+
+    printf("0000000000000000\n");
 
     srand(time(0));
 
@@ -125,8 +140,10 @@ int main(int argc, char* argv[]){
         }
         pthread_mutex_unlock(&mutex_server_open);
 
-        pthread_create(&t, NULL, client_thread_task, client_args.fifoname);
-        pthread_detach(t);
+        if(pthread_create(&t, NULL, client_thread_task, client_args.fifoname)){
+            perror("Failed creating client thread");
+
+        }else pthread_detach(t);
         
         usleep(REQUEST_INTERVAL*1000);
     }
