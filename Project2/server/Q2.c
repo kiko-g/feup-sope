@@ -46,7 +46,6 @@ void *server_thread_task(void *arg) {
         if(write(fd_private, &response_msg, sizeof(response_msg)) < 0)
             log_operation(client_msg.i, getpid(), pthread_self(), client_msg.dur, -1, GAVUP);
         else{
-            
             log_operation(client_msg.i, getpid(), pthread_self(), -1, -1, TLATE);
         }
         
@@ -84,6 +83,23 @@ void *server_thread_task(void *arg) {
             pthread_mutex_unlock(&mutex_place);
         }
 
+        free(arg);
+        return NULL; 
+    }
+
+    // When time is up
+    if(allocated_place == NO_AVAILABLE_STALL) {
+        log_operation(client_msg.i, getpid(), pthread_self(), -1, -1, TLATE);
+
+        if(server_args.nthreads) sem_post(&sem_nthreads);
+        if(server_args.nplaces){
+            sem_post(&sem_nPlaces);
+            pthread_mutex_lock(&mutex_place);
+            push_queue(queue,allocated_place);
+            pthread_mutex_unlock(&mutex_place);
+        }
+
+        close(fd_private);
         free(arg);
         return NULL; 
     }
