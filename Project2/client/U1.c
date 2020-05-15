@@ -20,9 +20,7 @@ pthread_mutex_t mutex_server_open = PTHREAD_MUTEX_INITIALIZER;
 void *client_thread_task(void *arg) {
     // open public fifo
     char *public_fifo = (char *) arg;
-    //char public_fifo[MAX_LEN];
-    //sprintf(public_fifo, "../server/%s", public_fifo_name);
-
+    
     // increment index -- safely
     int index;
     pthread_mutex_lock(&mutex_index);
@@ -113,7 +111,7 @@ int main(int argc, char* argv[]){
 
     struct ClientArgs client_args; 
     if(parse_client_args(argc, argv, &client_args)) {
-        perror("Error parsing client args");
+        fprintf(stderr, "Error parsing client argss\n");
         exit(1);
     }
 

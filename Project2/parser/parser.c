@@ -4,6 +4,8 @@
 #include "parser.h"
 #include <stdbool.h>
 #include <string.h>
+#include <sys/stat.h>
+
 
 
 int parse_client_args(int argc, char *argv[], struct ClientArgs * client_args){
@@ -93,6 +95,7 @@ int parse_server_args(int argc, char *argv[], struct ServerArgs * server_args){
         }
         else if(argv[i][0]!='-' && i != 0){
             foundFifoname = true;
+
             strncpy(server_args->fifoname,argv[i],sizeof(server_args->fifoname));
         }
 

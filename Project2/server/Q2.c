@@ -56,12 +56,9 @@ void *server_thread_task(void *arg) {
     int allocated_place;
     if(server_args.nplaces){
         sem_wait(&sem_nPlaces);
-
         pthread_mutex_lock(&mutex_place);
         allocated_place = pop_queue(queue);
         pthread_mutex_unlock(&mutex_place);
-        printf("%d",allocated_place);
-
     }else{
         pthread_mutex_lock(&mutex_place);
         allocated_place = current_place;
@@ -71,7 +68,11 @@ void *server_thread_task(void *arg) {
 
 
     send_message(fd_private, i, (int) getpid(), pthread_self(), dur, allocated_place);
-    close(fd_private);
+    
+    if(close(fd_private)){
+        fprintf(stderr, "Error closing private fifo\n");
+        pthread_exit(NULL);
+    }
     log_operation(i, (int) getpid(), pthread_self(), dur, allocated_place, ENTER);
 
     // wait for the client in the bathroom
@@ -97,18 +98,11 @@ int main(int argc, char* argv[]){
         exit(1);
     }
 
-    // initialize semaphores, if number of threads/places are limited
-    if(server_args.nthreads) sem_init(&sem_nthreads, 0, server_args.nthreads);
-
-    if(server_args.nplaces){
-        sem_init(&sem_nPlaces,0,server_args.nplaces);
-        queue = create_queue(server_args.nplaces);
-    }
-
     // create fifo
     timer_begin();
     if(mkfifo(server_args.fifoname, 0660) < 0) {
         if(errno == EEXIST) {
+            fprintf(stderr, "FIFO already exists\n");
         }
         else {
             char error_msg[MAX_LEN];
@@ -124,9 +118,20 @@ int main(int argc, char* argv[]){
         char error_msg[MAX_LEN];
         sprintf(error_msg, "Error opening public FIFO\n");
         write(STDOUT_FILENO, error_msg, strlen(error_msg));
-        unlink(server_args.fifoname);
+        if (unlink(server_args.fifoname)<0){
+            fprintf(stderr, "Error destroying FIFO");
+        }
         exit(1);
     }
+
+    // initialize semaphores, if number of threads/places are limited
+    if(server_args.nthreads) sem_init(&sem_nthreads, 0, server_args.nthreads);
+
+    if(server_args.nplaces){
+        sem_init(&sem_nPlaces,0,server_args.nplaces);
+        queue = create_queue(server_args.nplaces);
+    }
+
 
     char client_msg[MAX_STR_LEN];
     pthread_t t;
@@ -143,8 +148,9 @@ int main(int argc, char* argv[]){
     }
     
 
-    close(fd_public);
-    unlink(server_args.fifoname);
+
+    if (unlink(server_args.fifoname)<0)
+        fprintf(stderr, "Error destroying FIFO\n");
 
     while(read(fd_public, &client_msg, MAX_STR_LEN) > 0 && client_msg[0] == '[') {        
         // create thread if there's one available
@@ -154,17 +160,12 @@ int main(int argc, char* argv[]){
         
     }
 
-    int zas;
+    if(close(fd_public)<0)
+        fprintf(stderr, "Error closing FIFO\n");
 
-    while (!empty_queue(queue))
-    {
-        zas = pop_queue(queue);
-        printf("%d",zas);
-    }
-    
     destroy_queue(queue);
 
-    pthread_exit((void *)0);
+    pthread_exit(0);
 
 
 }
