@@ -26,7 +26,8 @@ void *server_thread_task(void *arg) {
     log_operation(client_msg.i, client_msg.pid, client_msg.tid, client_msg.dur, -1, RECVD);
 
     char private_fifo[MAX_LEN];
-    build_private_fifo(private_fifo, client_msg.pid, client_msg.tid);
+
+    sprintf(private_fifo, "/tmp/%d.%ld", client_msg.pid, client_msg.tid);
 
     // open the private fifo (if possible)
     int fd_private;
@@ -44,12 +45,13 @@ void *server_thread_task(void *arg) {
         RequestMessage response_msg = {client_msg.i, getpid(), pthread_self(), -1, -1};
         if(write(fd_private, &response_msg, sizeof(response_msg)) < 0)
             log_operation(client_msg.i, getpid(), pthread_self(), client_msg.dur, -1, GAVUP);
-        else
+        else{
+            
             log_operation(client_msg.i, (int) getpid(), pthread_self(), -1, -1, TLATE);
+        }
         
         close(fd_private);
         if(server_args.nthreads) sem_post(&sem_nthreads);
-
         free(arg);
         return NULL;
     }
@@ -88,7 +90,6 @@ void *server_thread_task(void *arg) {
     
     if(close(fd_private)){
         perror("Error closing private fifo");
-        pthread_exit(NULL);
     }
     log_operation(client_msg.i, getpid(), pthread_self(), client_msg.dur, allocated_place, ENTER);
 
@@ -100,13 +101,13 @@ void *server_thread_task(void *arg) {
     if(server_args.nthreads) sem_post(&sem_nthreads);
 
     if(server_args.nplaces){
-        sem_post(&sem_nPlaces);
         pthread_mutex_lock(&mutex_place);
         push_queue(queue,allocated_place);
         pthread_mutex_unlock(&mutex_place);
+        sem_post(&sem_nPlaces);
     }
-
     free(arg);
+
     return NULL;
 }
 
@@ -165,8 +166,9 @@ int main(int argc, char* argv[]){
             if(pthread_create(&t, NULL, server_thread_task, client_msg_copy)) {
                 perror("Failed creating server thread");
                 free(client_msg_copy);
+            }else{
+                pthread_detach(t);    
             }
-            pthread_detach(t);
         }
     }
     
@@ -184,8 +186,9 @@ int main(int argc, char* argv[]){
         if(pthread_create(&t, NULL, server_thread_task,client_msg_copy)) {
             perror("Failed creating server thread");
             free(client_msg_copy);
+        }else{
+            pthread_detach(t);
         }
-        pthread_detach(t);
         
     }
 
@@ -194,10 +197,6 @@ int main(int argc, char* argv[]){
 
     if(server_args.nplaces) destroy_queue(queue);
 
+
     pthread_exit(0);
 }
-
-
-void build_private_fifo(char *fifo_name, int pid, int tid) {
-    sprintf(fifo_name, "/tmp/%d.%d", pid, tid);
-}   
