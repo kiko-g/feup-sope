@@ -69,11 +69,6 @@ int main(int argc, char* argv[]){
         exit(1);
     }
 
-    printf("Fifoname %s\n",server_args.fifoname);
-    printf("NSecs %d\n",server_args.nsecs);
-    printf("NPlaces %d\n",server_args.nplaces);
-    printf("NThreads %d\n",server_args.nthreads);
-
     // create fifo
     timer_begin();
     if(mkfifo(server_args.fifoname, 0660) < 0) {

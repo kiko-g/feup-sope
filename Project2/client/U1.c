@@ -20,7 +20,7 @@ pthread_mutex_t mutex_server_open = PTHREAD_MUTEX_INITIALIZER;
 void *client_thread_task(void *arg) {
     // open public fifo
     char *public_fifo = (char *) arg;
-    
+
     // increment index -- safely
     int index;
     pthread_mutex_lock(&mutex_index);
@@ -46,6 +46,7 @@ void *client_thread_task(void *arg) {
     make_private_fifo(private_fifo);
     if(mkfifo(private_fifo, 0660) < 0) {
         if(errno == EEXIST) {
+            fprintf(stderr, "FIFO already exists\n");
         }
         else {
             char error_msg[MAX_LEN*2];
@@ -72,10 +73,10 @@ void *client_thread_task(void *arg) {
         usleep(100);
         attempt++;
     } 
-    if(attempt == 10) {
+    if(attempt == MAX_ATTEMPTS) {
         log_operation(index, (int) getpid(), (long) pthread_self(), time_client, -1, FAILD);
-        close(fd_private);
-        unlink(private_fifo);
+        if(close(fd_private) < 0) fprintf(stderr, "Error closing FIFO.\n");
+        if(unlink(private_fifo) < 0) fprintf(stderr, "Error destroying FIFO\n");
         return NULL;
     }
 
@@ -87,7 +88,6 @@ void *client_thread_task(void *arg) {
     // check if a place was given and log it
     if(time_client == -1 && place == -1) {
         log_operation(index, (int) getpid(), (long) pthread_self(), time_client, -1, CLOSD);
-        
         pthread_mutex_lock(&mutex_server_open);
         server_open = 0;
         pthread_mutex_unlock(&mutex_server_open);
@@ -96,8 +96,8 @@ void *client_thread_task(void *arg) {
         log_operation(index, (int) getpid(), (long) pthread_self(), time_client, place, IAMIN);
     }
 
-    close(fd_private);
-    unlink(private_fifo);
+    if(close(fd_private) < 0) fprintf(stderr,"Error closing FIFO\n");
+    if(unlink(private_fifo) < 0) fprintf(stderr, "Error destroying FIFO\n");
     return NULL;
 }
 
