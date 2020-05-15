@@ -54,7 +54,6 @@ void *client_thread_task(void *arg) {
     if(write(fd_public, &request_msg, sizeof(request_msg)) < 0) {
         if(close(fd_public)) perror("Error closing public FIFO");
         if(unlink(private_fifo)) perror("Error unlinking private FIFO");
-
         return NULL; 
     } else {
         log_operation(index, getpid(), pthread_self(), time_client, -1, IWANT);
@@ -63,10 +62,11 @@ void *client_thread_task(void *arg) {
 
     // open private fifo
     int fd_private = open(private_fifo, O_RDONLY);
+
     if(fd_private == -1) {
-            perror("Error opening private FIFO with O_RDONLY");
-            if(unlink(private_fifo) < 0) perror("Error deleting private FIFO");
-            return NULL;
+        perror("Error opening private FIFO with O_RDONLY");
+        if(unlink(private_fifo) < 0) perror("Error deleting private FIFO");
+        return NULL;
     }
     
     // read the server's response from the private fifo
@@ -96,6 +96,7 @@ void *client_thread_task(void *arg) {
 
     if(close(fd_private) < 0) perror("Error closing FIFO");
     if(unlink(private_fifo) < 0) perror("Error destroying FIFO");
+
     return NULL;
 }
 
