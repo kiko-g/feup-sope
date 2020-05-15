@@ -31,7 +31,7 @@ void *client_thread_task(void *arg) {
     int fd_public = open(public_fifo, O_WRONLY | O_NONBLOCK);
     if(fd_public == -1) {
         //log_operation(index, (int) getpid(), (long) pthread_self(), -1, -1, FAILD);
-        perror("Cannot open public FIFO with O_WRONLY and O_NONBLOCK\n");
+        perror("Cannot open public FIFO with O_WRONLY and O_NONBLOCK");
         return NULL;
     }
 
@@ -40,62 +40,63 @@ void *client_thread_task(void *arg) {
     make_private_fifo(private_fifo);
     if(mkfifo(private_fifo, 0660) < 0) {
         if(errno == EEXIST) {
-            perror("FIFO already exists\n");
+            perror("FIFO already exists");
         }
         else {
-            perror("Error creating private FIFO\n");
+            perror("Error creating private FIFO");
             return NULL;
         }
-    }
-
-    // open private fifo
-    int fd_private = open(private_fifo, O_RDONLY | O_NONBLOCK);
-    if(fd_private == -1) {
-            char error_msg[MAX_LEN*2];
-            perror("Error opening private FIFO with O_RDONLY\n");
-            if(unlink(private_fifo) < 0) perror("Error deleting private FIFO\n");
-            return NULL;
     }
 
     // send random request
     int time_client = (rand() %  (UPPER_TIME - LOWER_TIME + 1));
-    log_operation(index, (int) getpid(), (long) pthread_self(), -1, -1, IWANT);
-    send_message(fd_public, index, (int) getpid(), (long) pthread_self(), time_client, -1);
-    
-    if(close(fd_public) < 0) perror("Error closing public FIFO\n");
 
+    RequestMessage request_msg = {index, getpid(), pthread_self(), time_client, -1};
+    if(write(fd_public, &request_msg, sizeof(request_msg)) < 0) {
+        if(close(fd_public)) perror("Error closing public FIFO");
+        if(unlink(private_fifo)) perror("Error unlinking private FIFO");
+
+        return NULL; 
+    } else {
+        log_operation(index, getpid(), pthread_self(), time_client, -1, IWANT);
+        if(close(fd_public) < 0) perror("Error closing public FIFO");
+    }
+
+    // open private fifo
+    int fd_private = open(private_fifo, O_RDONLY);
+    if(fd_private == -1) {
+            perror("Error opening private FIFO with O_RDONLY");
+            if(unlink(private_fifo) < 0) perror("Error deleting private FIFO");
+            return NULL;
+    }
+    
     // read the server's response from the private fifo
     int attempt = 0;
-    char server_response[MAX_LEN];
-    while (read(fd_private, server_response, MAX_LEN) <= 0 && attempt < MAX_ATTEMPTS) {
-        usleep(100);
+    RequestMessage server_msg;
+    while (read(fd_private, &server_msg, sizeof(server_msg)) <= 0 && attempt < MAX_ATTEMPTS) {
+        usleep(250);
         attempt++;
     } 
     if(attempt == MAX_ATTEMPTS) {
-        log_operation(index, (int) getpid(), (long) pthread_self(), time_client, -1, FAILD);
-        if(close(fd_private) < 0) perror("Error closing FIFO.\n");
-        if(unlink(private_fifo) < 0) fprintf(stderr, "Error destroying FIFO\n");
+        log_operation(index, getpid(), pthread_self(), time_client, -1, FAILD);
+        if(close(fd_private) < 0) perror("Error closing FIFO");
+        if(unlink(private_fifo) < 0) fprintf(stderr, "Error destroying FIFO");
         return NULL;
     }
 
-    // parse the server's response
-    int idup, pid, duration, place;
-    long tid;
-    sscanf(server_response, "[ %d, %d, %ld, %d, %d ]", &idup, &pid, &tid, &time_client, &place);
-
     // check if a place was given and log it
-    if(time_client == -1 && place == -1) {
-        log_operation(index, (int) getpid(), (long) pthread_self(), time_client, -1, CLOSD);
+    if(server_msg.dur == -1 && server_msg.pl == -1) {
+        log_operation(index, getpid(), pthread_self(), time_client, -1, CLOSD);
         pthread_mutex_lock(&mutex_server_open);
         server_open = 0;
         pthread_mutex_unlock(&mutex_server_open);
     }   
     else {
-        log_operation(index, (int) getpid(), (long) pthread_self(), time_client, place, IAMIN);
+        log_operation(index, getpid(), pthread_self(), time_client, server_msg.pl, IAMIN);
     }
 
-    if(close(fd_private) < 0) perror("Error closing FIFO\n");
-    if(unlink(private_fifo) < 0) perror("Error destroying FIFO\n");
+    if(close(fd_private) < 0) perror("Error closing FIFO");
+    if(unlink(private_fifo) < 0) perror("Error destroying FIFO");
     return NULL;
 }
 
@@ -109,7 +110,7 @@ int main(int argc, char* argv[]){
 
     struct ClientArgs client_args; 
     if(parse_client_args(argc, argv, &client_args)) {
-        perror("Error parsing client args\n");
+        perror("Error parsing client args");
         exit(1);
     }
 
@@ -126,6 +127,7 @@ int main(int argc, char* argv[]){
 
         pthread_create(&t, NULL, client_thread_task, client_args.fifoname);
         pthread_detach(t);
+        
         usleep(REQUEST_INTERVAL*1000);
     }
 

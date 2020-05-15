@@ -20,34 +20,37 @@ struct ServerArgs server_args;
 Queue * queue;
 
 void *server_thread_task(void *arg) {
-    char* client_msg = (char*) arg;
+    RequestMessage client_msg = *(RequestMessage*) arg;
 
     // parse private fifo name and client's message
-    int i, pid, dur;
-    long tid;
-    sscanf(client_msg, "[ %d, %d, %ld, %d, -1 ]", &i, &pid, &tid, &dur);
-    log_operation(i, pid, tid, dur, -1, RECVD);
+    log_operation(client_msg.i, client_msg.pid, client_msg.tid, client_msg.dur, -1, RECVD);
 
     char private_fifo[MAX_LEN];
-    build_private_fifo(private_fifo, pid, tid);
+    build_private_fifo(private_fifo, client_msg.pid, client_msg.tid);
 
     // open the private fifo (if possible)
     int fd_private;
-    if((fd_private = open(private_fifo, O_WRONLY | O_NONBLOCK)) == -1) {
-        log_operation(i, pid, tid, dur, -1, GAVUP);
+    if((fd_private = open(private_fifo, O_WRONLY)) == -1) {
+        log_operation(client_msg.i, getpid(), pthread_self(), client_msg.dur, -1, GAVUP);
 
         if(server_args.nthreads) sem_post(&sem_nthreads);
+        free(arg);
         return NULL;
     }
 
     // check if client was too late 
-    // (rare case that client places request before closing, but the request is only handled after closing)
     if(timer_duration() >= (int) server_args.nsecs) {    
-        send_message(fd_private, i, (int) getpid(), pthread_self(), -1, -1);
-        close(fd_private);
-        log_operation(i, (int) getpid(), pthread_self(), -1, -1, TLATE);
 
+        RequestMessage response_msg = {client_msg.i, getpid(), pthread_self(), -1, -1};
+        if(write(fd_private, &response_msg, sizeof(response_msg)) < 0)
+            log_operation(client_msg.i, getpid(), pthread_self(), client_msg.dur, -1, GAVUP);
+        else
+            log_operation(client_msg.i, (int) getpid(), pthread_self(), -1, -1, TLATE);
+        
+        close(fd_private);
         if(server_args.nthreads) sem_post(&sem_nthreads);
+
+        free(arg);
         return NULL;
     }
 
@@ -65,17 +68,36 @@ void *server_thread_task(void *arg) {
         pthread_mutex_unlock(&mutex_place);
     }
 
+    RequestMessage response_msg = {client_msg.i, getpid(), pthread_self(), client_msg.dur, allocated_place};
+    if(write(fd_private, &response_msg, sizeof(response_msg)) < 0) {
+        log_operation(client_msg.i, getpid(), pthread_self(), client_msg.dur, -1, GAVUP);
+        close(fd_private);
 
-    send_message(fd_private, i, (int) getpid(), pthread_self(), dur, allocated_place);
+        if(server_args.nthreads) sem_post(&sem_nthreads);
+        
+        if(server_args.nplaces){
+            sem_post(&sem_nPlaces);
+            pthread_mutex_lock(&mutex_place);
+            push_queue(queue,allocated_place);
+            pthread_mutex_unlock(&mutex_place);
+        }
+
+        free(arg);
+        return NULL; 
+    }
     
     if(close(fd_private)){
-        perror("Error closing private fifo\n");
+        perror("Error closing private fifo");
         pthread_exit(NULL);
     }
-    log_operation(i, (int) getpid(), pthread_self(), dur, allocated_place, ENTER);
+    log_operation(client_msg.i, getpid(), pthread_self(), client_msg.dur, allocated_place, ENTER);
 
     // wait for the client in the bathroom
-    usleep(dur*1000);
+    usleep(client_msg.dur*1000);
+
+    log_operation(client_msg.i, getpid(), pthread_self(), client_msg.dur, allocated_place, TIMUP);
+
+    if(server_args.nthreads) sem_post(&sem_nthreads);
 
     if(server_args.nplaces){
         sem_post(&sem_nPlaces);
@@ -84,9 +106,7 @@ void *server_thread_task(void *arg) {
         pthread_mutex_unlock(&mutex_place);
     }
 
-    log_operation(i, (int) getpid(), pthread_self(), dur, allocated_place, TIMUP);
-
-    if(server_args.nthreads) sem_post(&sem_nthreads);
+    free(arg);
     return NULL;
 }
 
@@ -101,20 +121,20 @@ int main(int argc, char* argv[]){
     timer_begin();
     if(mkfifo(server_args.fifoname, 0660) < 0) {
         if(errno == EEXIST) {
-            perror("FIFO already exists\n");
+            perror("FIFO already exists");
         }
         else {
-            perror("Error creating public FIFO\n");
+            perror("Error creating public FIFO");
             exit(1);
         }
     }
 
     // open fifo
-    int fd_public = open(server_args.fifoname, O_RDONLY | O_NONBLOCK);
-    if(fd_public == -1) {
-        perror("Error opening public FIFO\n");
+    int fd_public = open(server_args.fifoname, O_RDONLY);
+    if(fd_public < 0) {
+        perror("Error opening public FIFO");
         if (unlink(server_args.fifoname)<0){
-            perror("Error destroying FIFO\n");
+            perror("Error destroying FIFO");
         }
         exit(1);
     }
@@ -127,34 +147,50 @@ int main(int argc, char* argv[]){
         queue = create_queue(server_args.nplaces);
     }
 
-
-    char client_msg[MAX_STR_LEN];
+    RequestMessage client_msg;
     pthread_t t;
 
     // receive and answer request
-    while(timer_duration() < (int) server_args.nsecs) {        
-        if(read(fd_public, &client_msg, MAX_STR_LEN) > 0 && client_msg[0] == '[') {
+    while(timer_duration() < (int) server_args.nsecs) {   
+        if(read(fd_public, &client_msg, sizeof(client_msg)) > 0) {
+
+            // copy message to another struct to ensure safe access
+            RequestMessage *client_msg_copy = malloc(sizeof(RequestMessage));
+            *client_msg_copy = client_msg;
+
             // create thread if there's one available
             if(server_args.nthreads) sem_wait(&sem_nthreads);
 
-            pthread_create(&t, NULL, server_thread_task, (void *) &client_msg);
+            // create thread to answer the request
+            if(pthread_create(&t, NULL, server_thread_task, client_msg_copy)) {
+                perror("Failed creating server thread");
+                free(client_msg_copy);
+            }
             pthread_detach(t);
         }
     }
     
     if (unlink(server_args.fifoname)<0)
-        perror("Error destroying FIFO\n");
+        perror("Error destroying FIFO");
 
-    while(read(fd_public, &client_msg, MAX_STR_LEN) > 0 && client_msg[0] == '[') {        
+    while(read(fd_public, &client_msg, sizeof(client_msg)) > 0) {  
+
+        // copy message to another struct to ensure safe access
+        RequestMessage *client_msg_copy = malloc(sizeof(RequestMessage));
+        *client_msg_copy = client_msg;      
+
         // create thread if there's one available
         if(server_args.nthreads) sem_wait(&sem_nthreads);
-        pthread_create(&t, NULL, server_thread_task, (void *) &client_msg);
+        if(pthread_create(&t, NULL, server_thread_task, (void *) &client_msg)) {
+            perror("Failed creating server thread");
+            free(client_msg_copy);
+        }
         pthread_detach(t);
         
     }
 
     if(close(fd_public)<0)
-        perror("Error closing FIFO\n");
+        perror("Error closing FIFO");
 
     if(server_args.nplaces) destroy_queue(queue);
 

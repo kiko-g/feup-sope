@@ -14,6 +14,18 @@
 #define MAX_STR_LEN 128
 
 /**
+ * @brief struct representing a message exchanged between the server and client
+ * Sent in binary to improve efficiency (avoiding conversions from int to string and vice-versa)
+ */
+typedef struct RequestMessage {
+    int i;
+    int pid;
+    long tid;
+    int dur;
+    int pl;
+} RequestMessage;
+
+/**
  * @brief Initializes the timer, in seconds
  * 
  */
