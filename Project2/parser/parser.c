@@ -10,8 +10,8 @@
 
 int parse_client_args(int argc, char *argv[], struct ClientArgs * client_args){
     if (argc != NUMBER_FLAGS) {
-        printf("Please insert arguments in the following format: ");
-        printf("U1 <-t secs> fifoname\n");
+        perror("Please insert arguments in the following format: ");
+        perror("U1 <-t secs> fifoname\n");
         return -1;
     }
 
@@ -20,11 +20,18 @@ int parse_client_args(int argc, char *argv[], struct ClientArgs * client_args){
         if(!strcmp(argv[i],"-t")){
 
             if(atoi(argv[i+1])){
-
-                client_args->nsecs=atoi(argv[i+1]);
-                i++;
+                if (atoi(argv[i+1]) > 0){
+                    client_args->nsecs=atoi(argv[i+1]);
+                    i++;
+                } else{
+                    perror("Please insert positive Time\n");
+                    return 1;
+                }
             }
-            else return 1;
+            else{
+                perror("Please insert valid time\n");
+                return 1;
+            } 
             
         }
         else  strncpy(client_args->fifoname, argv[i],sizeof(client_args->fifoname));
@@ -37,8 +44,8 @@ int parse_client_args(int argc, char *argv[], struct ClientArgs * client_args){
 
 int parse_server_args(int argc, char *argv[], struct ServerArgs * server_args){
     if (argc < NUMBER_FLAGS || argc > NUMBER_SERVER_FLAGS) {
-        printf("Please insert arguments in the following format: ");
-        printf("Qn <-t nsecs> [-l nplaces] [-n nthreads] fifoname\n");
+        perror("Please insert arguments in the following format: ");
+        perror("Qn <-t nsecs> [-l nplaces] [-n nthreads] fifoname\n");
         return -1;
     }
     bool foundSeconds = false;
@@ -50,15 +57,20 @@ int parse_server_args(int argc, char *argv[], struct ServerArgs * server_args){
             foundSeconds = true;
 
             if(server_args->nsecs > 0){
-                printf("Already Defined nsecs\n");
+                perror("Already Defined nsecs\n");
                 return 1;
             }
             if(atoi(argv[i+1])){
-                server_args->nsecs=atoi(argv[i+1]);
-                i++;
+                if(atoi(argv[i+1]) > 0){
+                    server_args->nsecs=atoi(argv[i+1]);
+                    i++;
+                } else{
+                    perror("Please inster a natural number after -t \n");
+                    return 1;
+                }
             }
             else{
-                printf("Please inster a natural number after -t \n");
+                perror("Please inster a natural number after -t \n");
                 return 1;
             }
             
@@ -66,30 +78,40 @@ int parse_server_args(int argc, char *argv[], struct ServerArgs * server_args){
         else if(!strcmp(argv[i],"-l")){
 
             if(server_args->nplaces > 0){
-                printf("Already Defined nplaces\n");
+                perror("Already Defined nplaces\n");
                 return 1;
             }
             if(atoi(argv[i+1])){
-                server_args->nplaces = atoi(argv[i+1]);
-                i++;
+                if(atoi(argv[i+1]) > 0){
+                    server_args->nplaces = atoi(argv[i+1]);
+                    i++;
+                }else{
+                    perror("Please inster a natural number after -l \n");
+                    return 1;
+                }
             }
             else{
-                printf("Please inster a natural number after -l \n");
+                perror("Please inster a natural number after -l \n");
                 return 1;
             }
         }
         else if(!strcmp(argv[i],"-n")){
 
             if(server_args->nthreads > 0){
-                printf("Already Defined nthreads\n");
+                perror("Already Defined nthreads\n");
                 return 1;
             }
             if(atoi(argv[i+1])){
-                server_args->nthreads = atoi(argv[i+1]);
-                i++;
+                if(atoi(argv[i+1]) > 0){
+                    server_args->nthreads = atoi(argv[i+1]);
+                    i++;
+                }else{
+                    perror("Please inster a natural number after -n \n");
+                    return 1;
+                }
             }
             else{
-                printf("Please inster a natural number after -n \n");
+                perror("Please inster a natural number after -n \n");
                 return 1;
             }
         }
@@ -102,11 +124,11 @@ int parse_server_args(int argc, char *argv[], struct ServerArgs * server_args){
     }
 
     if(!foundFifoname){
-        printf("Please insert Fifoname\n");
+        perror("Please insert Fifoname\n");
         return 1;
     }
     if (!foundSeconds){
-        printf("Please define nsecs\n");
+        perror("Please define nsecs\n");
         return 1;
     }
 
