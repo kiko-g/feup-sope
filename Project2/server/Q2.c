@@ -51,8 +51,7 @@ void *server_thread_task(void *arg) {
         return NULL;
     }
 
-    // allocate client and send message
-    
+    // allocate client and send message   
     int allocated_place;
     if(server_args.nplaces){
         sem_wait(&sem_nPlaces);
@@ -70,7 +69,7 @@ void *server_thread_task(void *arg) {
     send_message(fd_private, i, (int) getpid(), pthread_self(), dur, allocated_place);
     
     if(close(fd_private)){
-        fprintf(stderr, "Error closing private fifo\n");
+        perror("Error closing private fifo\n");
         pthread_exit(NULL);
     }
     log_operation(i, (int) getpid(), pthread_self(), dur, allocated_place, ENTER);
@@ -102,12 +101,10 @@ int main(int argc, char* argv[]){
     timer_begin();
     if(mkfifo(server_args.fifoname, 0660) < 0) {
         if(errno == EEXIST) {
-            fprintf(stderr, "FIFO already exists\n");
+            perror("FIFO already exists\n");
         }
         else {
-            char error_msg[MAX_LEN];
-            sprintf(error_msg, "Error creating public FIFO\n");
-            write(STDOUT_FILENO, error_msg, strlen(error_msg));
+            perror("Error creating public FIFO\n");
             exit(1);
         }
     }
@@ -115,11 +112,9 @@ int main(int argc, char* argv[]){
     // open fifo
     int fd_public = open(server_args.fifoname, O_RDONLY | O_NONBLOCK);
     if(fd_public == -1) {
-        char error_msg[MAX_LEN];
-        sprintf(error_msg, "Error opening public FIFO\n");
-        write(STDOUT_FILENO, error_msg, strlen(error_msg));
+        perror("Error opening public FIFO\n");
         if (unlink(server_args.fifoname)<0){
-            fprintf(stderr, "Error destroying FIFO");
+            perror("Error destroying FIFO\n");
         }
         exit(1);
     }
@@ -147,10 +142,8 @@ int main(int argc, char* argv[]){
         }
     }
     
-
-
     if (unlink(server_args.fifoname)<0)
-        fprintf(stderr, "Error destroying FIFO\n");
+        perror("Error destroying FIFO\n");
 
     while(read(fd_public, &client_msg, MAX_STR_LEN) > 0 && client_msg[0] == '[') {        
         // create thread if there's one available
@@ -161,13 +154,11 @@ int main(int argc, char* argv[]){
     }
 
     if(close(fd_public)<0)
-        fprintf(stderr, "Error closing FIFO\n");
+        perror("Error closing FIFO\n");
 
-    destroy_queue(queue);
+    if(server_args.nplaces) destroy_queue(queue);
 
     pthread_exit(0);
-
-
 }
 
 
