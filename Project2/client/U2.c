@@ -8,6 +8,7 @@
 #include <time.h>
 #include <pthread.h> 
 #include <errno.h>
+#include <signal.h>
 #include "U2.h"
 #include "../parser/parser.h"
 #include "../utils/utils.h"
@@ -104,6 +105,8 @@ int main(int argc, char* argv[]){
 
     srand(time(0));
 
+    install_sigactions();
+
     struct ClientArgs client_args; 
     if(parse_client_args(argc, argv, &client_args)) {
         fprintf(stderr, "Error parsing client args\n");
@@ -132,4 +135,18 @@ int main(int argc, char* argv[]){
     }
 
     pthread_exit(0);
+}
+
+
+void install_sigactions() {
+
+    struct sigaction sigpipeIgnore;
+    sigpipeIgnore.sa_handler = SIG_IGN;
+    sigemptyset(&sigpipeIgnore.sa_mask);
+    sigpipeIgnore.sa_flags = 0;
+
+    if (sigaction(SIGPIPE,&sigpipeIgnore,NULL) < 0)  {        
+        fprintf(stderr,"Failed to install SIGPIPE handler\n");        
+        exit(1);  
+    }  
 }
