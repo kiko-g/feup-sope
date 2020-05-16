@@ -148,10 +148,10 @@ int main(int argc, char* argv[]){
     }
 
     // open fifo
-    int fd_public = open(server_args.fifoname, O_RDONLY);
+    int fd_public = open(server_args.fifoname, O_RDONLY | O_NONBLOCK);
     if(fd_public < 0) {
         perror("Error opening public FIFO");
-        if (unlink(server_args.fifoname)<0){
+        if (unlink(server_args.fifoname)<0) {
             perror("Error destroying FIFO");
         }
         exit(1);

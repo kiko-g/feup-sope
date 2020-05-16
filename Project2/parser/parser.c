@@ -11,7 +11,7 @@
 int parse_client_args(int argc, char *argv[], struct ClientArgs * client_args){
     if (argc != NUMBER_FLAGS) {
         fprintf(stderr, "Please insert arguments in the following format: ");
-        fprintf(stderr, "U1 <-t secs> fifoname\n");
+        fprintf(stderr, "Un <-t secs> fifoname\n");
         return -1;
     }
 
