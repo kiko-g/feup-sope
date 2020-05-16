@@ -17,7 +17,7 @@
 
 int current_place = 1;
 pthread_mutex_t mutex_place = PTHREAD_MUTEX_INITIALIZER;
-sem_t sem_nthreads,sem_nPlaces;
+sem_t sem_nthreads, sem_nplaces;
 struct ServerArgs server_args = {0,0,MAX_NUMBER_THREADS,""}; 
 Queue * queue;
 int working = 1;
@@ -72,7 +72,7 @@ void *server_thread_task(void *arg) {
     // allocate client and send message   
     int allocated_place;
     if(server_args.nplaces){
-        sem_wait(&sem_nPlaces);
+        sem_wait(&sem_nplaces);
         pthread_mutex_lock(&mutex_place);
         allocated_place = pop_queue(queue);
         pthread_mutex_unlock(&mutex_place);
@@ -83,7 +83,7 @@ void *server_thread_task(void *arg) {
         pthread_mutex_unlock(&mutex_place);
     }
 
-    // check again if client was too late -> when fifo was destroyed
+    // check again if client was too late -> when fifo was destroyed or the too much time has passed since the allocation of the place
     if(allocated_place == NO_AVAILABLE_STALL || timer_duration() >= (int) server_args.nsecs) {
 
         RequestMessage response_msg = {client_msg.i, getpid(), pthread_self(), -1, -1};
@@ -95,7 +95,7 @@ void *server_thread_task(void *arg) {
 
         if(server_args.nthreads) sem_post(&sem_nthreads);
         if(server_args.nplaces){
-            sem_post(&sem_nPlaces);
+            sem_post(&sem_nplaces);
             pthread_mutex_lock(&mutex_place);
             push_queue(queue,allocated_place);
             pthread_mutex_unlock(&mutex_place);
@@ -116,7 +116,7 @@ void *server_thread_task(void *arg) {
         if(server_args.nthreads) sem_post(&sem_nthreads);
         
         if(server_args.nplaces){
-            sem_post(&sem_nPlaces);
+            sem_post(&sem_nplaces);
             pthread_mutex_lock(&mutex_place);
             push_queue(queue,allocated_place);
             pthread_mutex_unlock(&mutex_place);
@@ -144,7 +144,7 @@ void *server_thread_task(void *arg) {
         pthread_mutex_lock(&mutex_place);
         push_queue(queue,allocated_place);
         pthread_mutex_unlock(&mutex_place);
-        sem_post(&sem_nPlaces);
+        sem_post(&sem_nplaces);
     }
     free(arg);
 
@@ -190,7 +190,7 @@ int main(int argc, char* argv[]){
     if(server_args.nthreads) sem_init(&sem_nthreads, 0, server_args.nthreads);
 
     if(server_args.nplaces){
-        sem_init(&sem_nPlaces,0,server_args.nplaces);
+        sem_init(&sem_nplaces,0,server_args.nplaces);
         queue = create_queue(server_args.nplaces);
     }
 

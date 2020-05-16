@@ -1,0 +1,47 @@
+FILE
+Name: Makefile
+Path: ./Makefile
+Size: 502 Bytes
+
+FILE
+Name: simpledu.c
+Path: ./simpledu.c
+Size: 6542 Bytes
+
+FILE
+Name: simpledu
+Path: ./simpledu
+Size: 17880 Bytes
+
+DIRECTORY
+Name: whatever
+
+FILE
+Name: arguments.h
+Path: ./arguments.h
+Size: 175 Bytes
+
+FILE
+Name: simpledu.o
+Path: ./simpledu.o
+Size: 16464 Bytes
+
+FILE
+Name: simpledu.d
+Path: ./simpledu.d
+Size: 46 Bytes
+
+FILE
+Name: main.sh
+Path: ./main.sh
+Size: 94 Bytes
+
+FILE
+Name: simpledu.h
+FILE
+Path: ./simpledu.h
+Name: test.txt
+Size: 1994 Bytes
+
+Path: ./whatever/test.txt
+Size: 7 Bytes
