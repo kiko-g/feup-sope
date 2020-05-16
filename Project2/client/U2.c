@@ -8,7 +8,7 @@
 #include <time.h>
 #include <pthread.h> 
 #include <errno.h>
-#include "U1.h"
+#include "U2.h"
 #include "../parser/parser.h"
 #include "../utils/utils.h"
 
@@ -106,7 +106,7 @@ int main(int argc, char* argv[]){
 
     struct ClientArgs client_args; 
     if(parse_client_args(argc, argv, &client_args)) {
-        perror("Error parsing client args");
+        fprintf(stderr, "Error parsing client args\n");
         exit(1);
     }
 

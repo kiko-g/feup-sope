@@ -8,7 +8,8 @@
 #include <string.h>
 #include <pthread.h> 
 #include <semaphore.h>
-#include "Q1.h"
+#include <signal.h>
+#include "Q2.h"
 #include "../parser/parser.h"
 #include "../utils/utils.h"
 #include "queue.h"
@@ -130,7 +131,7 @@ void *server_thread_task(void *arg) {
 int main(int argc, char* argv[]){
 
     if(parse_server_args(argc, argv, &server_args)){
-        perror("Error parsing server args");
+        fprintf(stderr, "Error parsing server args");
         exit(1);
     }
 
