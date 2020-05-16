@@ -3,6 +3,8 @@
 #define NUMBER_FLAGS 4
 #define NUMBER_SERVER_FLAGS 8
 #define T_FLAG "-t"
+#define MAX_NUMBER_THREADS 256
+
 
 
 struct ServerArgs {

@@ -14,10 +14,11 @@
 #include "../utils/utils.h"
 #include "queue.h"
 
+
 int current_place = 1;
 pthread_mutex_t mutex_place = PTHREAD_MUTEX_INITIALIZER;
 sem_t sem_nthreads,sem_nPlaces;
-struct ServerArgs server_args; 
+struct ServerArgs server_args = {0,0,MAX_NUMBER_THREADS,""}; 
 Queue * queue;
 
 void *server_thread_task(void *arg) {
@@ -148,7 +149,7 @@ int main(int argc, char* argv[]){
     }
 
     // open fifo
-    int fd_public = open(server_args.fifoname, O_RDONLY);
+    int fd_public = open(server_args.fifoname, O_RDONLY | O_NONBLOCK);
     if(fd_public < 0) {
         perror("Error opening public FIFO");
         if (unlink(server_args.fifoname)<0){

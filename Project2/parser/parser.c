@@ -103,20 +103,20 @@ int parse_server_args(int argc, char *argv[], struct ServerArgs * server_args){
         }
         else if(!strcmp(argv[i],"-n")){
 
-            if(server_args->nthreads > 0){
+            if(server_args->nthreads != MAX_NUMBER_THREADS){
                 fprintf(stderr, "Already Defined nthreads\n");
                 return 1;
             }
-            if(atoi(argv[i+1])){
-                if(atoi(argv[i+1]) > 0){
-                    server_args->nthreads = atoi(argv[i+1]);
-                    i++;
-                }else{
-                    fprintf(stderr, "Please insert a natural number after -n \n");
-                    return 1;
-                }
-            }
-            else{
+
+            int numberThreads = atoi(argv[i+1]);
+            if(numberThreads > 0){
+                server_args->nthreads = numberThreads;
+                i++;
+            }else if(numberThreads == 0){
+                printf("Will assume Infinite number of threads\n");
+                server_args->nthreads = numberThreads;
+                i++;
+            }else{
                 fprintf(stderr, "Please insert a natural number after -n \n");
                 return 1;
             }
