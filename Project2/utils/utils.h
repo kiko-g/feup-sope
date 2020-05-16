@@ -11,7 +11,7 @@
 #define FAILD "FAILD"
 #define GAVUP "GAVUP"
 
-#define MAX_STR_LEN 512
+#define MAX_STR_LEN 256
 
 /**
  * @brief struct representing a message exchanged between the server and client
@@ -62,4 +62,4 @@ void log_operation(int i, int pid, long tid, int dur, int pl, char* op);
  */
 void send_message(int fd, int i, int pid, long tid, int dur, int pl);
 
-void install_sigactions();
+void install_sigpipe_handler();

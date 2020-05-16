@@ -32,7 +32,7 @@ void send_message(int fd, int i, int pid, long tid, int dur, int pl) {
   write(fd, &msg_string, strlen(msg_string));
 }
 
-void install_sigactions() {
+void install_sigpipe_handler() {
 
     struct sigaction sigpipeIgnore;
     sigpipeIgnore.sa_handler = SIG_IGN;

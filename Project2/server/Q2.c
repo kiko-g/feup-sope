@@ -20,9 +20,20 @@ pthread_mutex_t mutex_place = PTHREAD_MUTEX_INITIALIZER;
 sem_t sem_nthreads,sem_nPlaces;
 struct ServerArgs server_args = {0,0,MAX_NUMBER_THREADS,""}; 
 Queue * queue;
+int working = 1;
+
 
 void *server_thread_task(void *arg) {
     struct RequestMessage client_msg = *( struct RequestMessage*) arg;
+
+    // blocking sigalrm for this thread
+    sigset_t set;
+    sigemptyset(&set);
+    sigaddset(&set, SIGALRM);
+    if(pthread_sigmask(SIG_BLOCK, &set, NULL)) {
+        perror("Unable to set sigmask for client thread");
+        return NULL;
+    }
 
     // parse private fifo name and client's message
     log_operation(client_msg.i, client_msg.pid, client_msg.tid, client_msg.dur, -1, RECVD);
@@ -73,7 +84,7 @@ void *server_thread_task(void *arg) {
     }
 
     // check again if client was too late -> when fifo was destroyed
-    if(allocated_place == NO_AVAILABLE_STALL) {
+    if(allocated_place == NO_AVAILABLE_STALL || timer_duration() >= (int) server_args.nsecs) {
 
         RequestMessage response_msg = {client_msg.i, getpid(), pthread_self(), -1, -1};
         if(write(fd_private, &response_msg, sizeof(response_msg)) < 0) {
@@ -140,9 +151,11 @@ void *server_thread_task(void *arg) {
     return NULL;
 }
 
+
 int main(int argc, char* argv[]){
 
-    install_sigactions();
+    install_sigpipe_handler();
+    install_sigalrm_handler();
 
     if(parse_server_args(argc, argv, &server_args)){
         fprintf(stderr, "Error parsing server args");
@@ -150,6 +163,7 @@ int main(int argc, char* argv[]){
     }
 
     // create fifo
+    alarm(server_args.nsecs);
     timer_begin();
     if(mkfifo(server_args.fifoname, 0660) < 0) {
         if(errno == EEXIST) {
@@ -162,8 +176,9 @@ int main(int argc, char* argv[]){
     }
 
     // open fifo
-    int fd_public = open(server_args.fifoname, O_RDONLY | O_NONBLOCK);
+    int fd_public = open(server_args.fifoname, O_RDONLY);
     if(fd_public < 0) {
+        if(errno == EINTR) fprintf(stderr, "No clients received\n");
         perror("Error opening public FIFO");
         if (unlink(server_args.fifoname)<0){
             perror("Error destroying FIFO");
@@ -183,7 +198,7 @@ int main(int argc, char* argv[]){
     pthread_t t;
 
     // receive and answer request
-    while(timer_duration() < (int) server_args.nsecs) {   
+    while(working) {   
         if(read(fd_public, &client_msg, sizeof(client_msg)) > 0) {
 
             // copy message to another struct to ensure safe access
@@ -201,6 +216,7 @@ int main(int argc, char* argv[]){
                 pthread_detach(t);    
             }
         }
+        else if(errno == EINTR) fprintf(stderr, "Failed read because of SIGALRM\n");
     }
     
     if (unlink(server_args.fifoname)<0)
@@ -234,4 +250,22 @@ int main(int argc, char* argv[]){
     }
 
     pthread_exit(0);
+}
+
+
+void install_sigalrm_handler() {
+    struct sigaction sa;
+    sa.sa_handler = sigalrm_handler;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = 0;
+
+    if (sigaction(SIGALRM, &sa, NULL) < 0)  {        
+        fprintf(stderr,"Failed to install SIGARLM handler\n");        
+        exit(1);  
+    }  
+}
+
+
+void sigalrm_handler(int signo) {
+    working = 0;
 }

@@ -9,3 +9,7 @@
  * it's answered after the time's over
  */
 void *server_thread_task(void *arg);
+
+void install_sigalrm_handler();
+
+void sigalrm_handler(int signo);

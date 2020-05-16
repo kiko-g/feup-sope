@@ -12,10 +12,12 @@
 #include "../parser/parser.h"
 #include "../utils/utils.h"
 
+
 int i = 1;
 int server_open = 1;
 pthread_mutex_t mutex_index = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mutex_server_open = PTHREAD_MUTEX_INITIALIZER;
+
 
 void *client_thread_task(void *arg) {
     // open public fifo
@@ -102,11 +104,12 @@ void *client_thread_task(void *arg) {
     return NULL;
 }
 
+
 int main(int argc, char* argv[]){
 
     srand(time(0));
 
-    install_sigactions();
+    install_sigpipe_handler();
 
     struct ClientArgs client_args; 
     if(parse_client_args(argc, argv, &client_args)) {
