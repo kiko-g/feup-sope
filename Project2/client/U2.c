@@ -8,7 +8,6 @@
 #include <time.h>
 #include <pthread.h> 
 #include <errno.h>
-#include <signal.h>
 #include "U2.h"
 #include "../parser/parser.h"
 #include "../utils/utils.h"
@@ -31,7 +30,7 @@ void *client_thread_task(void *arg) {
 
     int fd_public = open(public_fifo, O_WRONLY | O_NONBLOCK);
     if(fd_public == -1) {
-        perror("Cannot open public FIFO with O_WRONLY and O_NONBLOCK");
+        perror("Can't reach server - unable to open public FIFO");
         return NULL;
     }
 
@@ -53,6 +52,8 @@ void *client_thread_task(void *arg) {
 
     RequestMessage request_msg = {index, getpid(), pthread_self(), time_client, -1};
     if(write(fd_public, &request_msg, sizeof(request_msg)) < 0) {
+        if(errno == EPIPE) fprintf(stderr, "Failed writing to public FIFO - reading end was already closed\n");
+
         if(close(fd_public)) perror("Error closing public FIFO");
         if(unlink(private_fifo)) perror("Error unlinking private FIFO");
         return NULL; 
@@ -137,16 +138,3 @@ int main(int argc, char* argv[]){
     pthread_exit(0);
 }
 
-
-void install_sigactions() {
-
-    struct sigaction sigpipeIgnore;
-    sigpipeIgnore.sa_handler = SIG_IGN;
-    sigemptyset(&sigpipeIgnore.sa_mask);
-    sigpipeIgnore.sa_flags = 0;
-
-    if (sigaction(SIGPIPE,&sigpipeIgnore,NULL) < 0)  {        
-        fprintf(stderr,"Failed to install SIGPIPE handler\n");        
-        exit(1);  
-    }  
-}

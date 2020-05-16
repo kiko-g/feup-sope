@@ -1,17 +1,17 @@
  #include <time.h>
 
 // Operation types
-#define IWANT 0
-#define RECVD 1
-#define ENTER 2
-#define IAMIN 3
-#define TIMUP 4
-#define TLATE 5
-#define CLOSD 6
-#define FAILD 7
-#define GAVUP 8
+#define IWANT "IWANT"
+#define RECVD "RECVD"
+#define ENTER "ENTER"
+#define IAMIN "IAMIN"
+#define TIMUP "TIMUP"
+#define TLATE "2LATE"
+#define CLOSD "CLOSD"
+#define FAILD "FAILD"
+#define GAVUP "GAVUP"
 
-#define MAX_STR_LEN 128
+#define MAX_STR_LEN 512
 
 /**
  * @brief struct representing a message exchanged between the server and client
@@ -48,7 +48,7 @@ int timer_duration();
  * @param pl attributed place of the bathroom 
  * @param op string representing the operation
  */
-void log_operation(int i, int pid, long tid, int dur, int pl, int op);
+void log_operation(int i, int pid, long tid, int dur, int pl, char* op);
 
 /**
  * @brief Sends a message through the FIFO
@@ -61,3 +61,5 @@ void log_operation(int i, int pid, long tid, int dur, int pl, int op);
  * @param pl attributed place of the bathroom 
  */
 void send_message(int fd, int i, int pid, long tid, int dur, int pl);
+
+void install_sigactions();

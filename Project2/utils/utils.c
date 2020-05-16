@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <time.h>
+#include <signal.h>
+#include <stdlib.h>
 #include "utils.h"
 
 time_t begin;
@@ -18,41 +20,9 @@ int timer_duration(){
   return elapsed_time;
 }
 
-void log_operation(int i, int pid, long tid, int dur, int pl, int op) {
-  char oper[6];
-  
-  switch(op) {
-    case IWANT:
-      strcpy(oper, "IWANT");
-      break;
-    case RECVD:
-      strcpy(oper, "RECVD");
-      break;
-    case ENTER:
-      strcpy(oper, "ENTER");
-      break;
-    case IAMIN:
-      strcpy(oper, "IAMIN");
-      break;
-    case TIMUP:
-      strcpy(oper, "TIMUP");
-      break;
-    case TLATE:
-      strcpy(oper, "2LATE");
-      break;
-    case CLOSD:
-      strcpy(oper, "CLOSD");
-      break;
-    case FAILD:
-      strcpy(oper, "FAILD");
-      break;
-    case GAVUP:
-      strcpy(oper, "GAVUP");
-      break;
-  }
-
+void log_operation(int i, int pid, long tid, int dur, int pl, char* op) {
   char log_string[MAX_STR_LEN];
-  sprintf(log_string, "%d ; %d ; %d ; %ld ; %d ; %d ; %s\n", timer_duration(), i, pid, tid, dur, pl, oper);
+  sprintf(log_string, "%d ; %d ; %d ; %ld ; %d ; %d ; %s\n", timer_duration(), i, pid, tid, dur, pl, op);
   write(STDOUT_FILENO, log_string, strlen(log_string));
 }
 
@@ -60,4 +30,17 @@ void send_message(int fd, int i, int pid, long tid, int dur, int pl) {
   char msg_string[MAX_STR_LEN];
   sprintf(msg_string, "[ %d, %d, %ld, %d, %d ]", i, pid, tid, dur, pl);
   write(fd, &msg_string, strlen(msg_string));
+}
+
+void install_sigactions() {
+
+    struct sigaction sigpipeIgnore;
+    sigpipeIgnore.sa_handler = SIG_IGN;
+    sigemptyset(&sigpipeIgnore.sa_mask);
+    sigpipeIgnore.sa_flags = 0;
+
+    if (sigaction(SIGPIPE,&sigpipeIgnore,NULL) < 0)  {        
+        fprintf(stderr,"Failed to install SIGPIPE handler\n");        
+        exit(1);  
+    }  
 }

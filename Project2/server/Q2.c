@@ -41,15 +41,16 @@ void *server_thread_task(void *arg) {
         return NULL;
     }
 
-    // check if client was too late 
+    // check if client was too late -> case when queue wasn't yet destroyed, but time is up 
     if(timer_duration() >= (int) server_args.nsecs) {    
 
         RequestMessage response_msg = {client_msg.i, getpid(), pthread_self(), -1, -1};
-        if(write(fd_private, &response_msg, sizeof(response_msg)) < 0)
+        if(write(fd_private, &response_msg, sizeof(response_msg)) < 0) {
+            if(errno == EPIPE) fprintf(stderr, "Failed writing to public FIFO - reading end was already closed\n");
             log_operation(client_msg.i, getpid(), pthread_self(), client_msg.dur, -1, GAVUP);
-        else{
-            log_operation(client_msg.i, getpid(), pthread_self(), -1, -1, TLATE);
         }
+        else log_operation(client_msg.i, getpid(), pthread_self(), -1, -1, TLATE);
+
         
         close(fd_private);
         if(server_args.nthreads) sem_post(&sem_nthreads);
@@ -71,8 +72,33 @@ void *server_thread_task(void *arg) {
         pthread_mutex_unlock(&mutex_place);
     }
 
+    // check again if client was too late -> when fifo was destroyed
+    if(allocated_place == NO_AVAILABLE_STALL) {
+
+        RequestMessage response_msg = {client_msg.i, getpid(), pthread_self(), -1, -1};
+        if(write(fd_private, &response_msg, sizeof(response_msg)) < 0) {
+            if(errno == EPIPE) fprintf(stderr, "Failed writing to public FIFO - reading end was already closed\n");
+            log_operation(client_msg.i, getpid(), pthread_self(), client_msg.dur, -1, GAVUP);
+        }
+        else log_operation(client_msg.i, getpid(), pthread_self(), -1, -1, TLATE);
+
+        if(server_args.nthreads) sem_post(&sem_nthreads);
+        if(server_args.nplaces){
+            sem_post(&sem_nPlaces);
+            pthread_mutex_lock(&mutex_place);
+            push_queue(queue,allocated_place);
+            pthread_mutex_unlock(&mutex_place);
+        }
+
+        close(fd_private);
+        free(arg);
+        return NULL; 
+    }
+
     RequestMessage response_msg = {client_msg.i, getpid(), pthread_self(), client_msg.dur, allocated_place};
     if(write(fd_private, &response_msg, sizeof(response_msg)) < 0) {
+        if(errno == EPIPE) fprintf(stderr, "Failed writing to private FIFO - reading end was already closed\n");
+        
         log_operation(client_msg.i, getpid(), pthread_self(), client_msg.dur, -1, GAVUP);
         close(fd_private);
 
@@ -89,22 +115,7 @@ void *server_thread_task(void *arg) {
         return NULL; 
     }
 
-    // When time is up
-    if(allocated_place == NO_AVAILABLE_STALL) {
-        log_operation(client_msg.i, getpid(), pthread_self(), -1, -1, TLATE);
 
-        if(server_args.nthreads) sem_post(&sem_nthreads);
-        if(server_args.nplaces){
-            sem_post(&sem_nPlaces);
-            pthread_mutex_lock(&mutex_place);
-            push_queue(queue,allocated_place);
-            pthread_mutex_unlock(&mutex_place);
-        }
-
-        close(fd_private);
-        free(arg);
-        return NULL; 
-    }
     
     if(close(fd_private)){
         perror("Error closing private fifo");
@@ -130,6 +141,8 @@ void *server_thread_task(void *arg) {
 }
 
 int main(int argc, char* argv[]){
+
+    install_sigactions();
 
     if(parse_server_args(argc, argv, &server_args)){
         fprintf(stderr, "Error parsing server args");

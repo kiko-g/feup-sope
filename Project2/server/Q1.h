@@ -1,5 +1,5 @@
 #define MAX_THREADS 10000
-#define MAX_STR_LEN 128
+#define MAX_STR_LEN 512
 
 /**
  * @brief Task for the server's threads

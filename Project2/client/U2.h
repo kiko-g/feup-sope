@@ -12,5 +12,5 @@
  * 
  */
 void *client_thread_task(void *arg);
-void install_sigactions();
+
 
